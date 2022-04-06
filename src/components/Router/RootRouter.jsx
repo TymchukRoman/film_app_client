@@ -4,6 +4,7 @@ import {
     Routes,
     Route,
 } from "react-router-dom";
+import General from "../General/General";
 import Header from "../Header/Header";
 import routes from './routes';
 
