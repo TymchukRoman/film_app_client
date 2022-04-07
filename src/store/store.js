@@ -1,5 +1,11 @@
-import { createStore, combineReducers } from 'redux'
-import { user } from './reducers/user.reducer';
+import { applyMiddleware, combineReducers, compose, createStore } from "redux";
+import thunkMiddleware from "redux-thunk";
+import user from './reducers/user.reducer';
 
+let rootReducer = combineReducers({
+    profile: user,
+})
 
-export const store = createStore(combineReducers({ user, product, account }))
+const composeEnhancers = compose;
+export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware)))
+window.__store__ = store;

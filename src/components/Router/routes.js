@@ -1,3 +1,4 @@
+import AuthScreen from "../Auth/AuthScreen";
 import General from "../General/General";
 import MovieList from "../MovieList/MovieList";
 import Profile from "../Profile/Profile";
@@ -17,6 +18,11 @@ const routes = [
         path: '/profile',
         exact: false,
         component: <Profile />
+    },
+    {
+        path: '/auth',
+        exact: false,
+        component: <AuthScreen />
     }
 ]
 
