@@ -1,8 +1,9 @@
 import { useFormik } from "formik";
 import React from "react";
 import { Form, Button } from "react-bootstrap";
+import { loginUser, userMe } from "../../api/userAPI";
 
-const Login = ({ switchMode, loginUser }) => {
+const Login = ({ switchMode, setLoginedUser }) => {
 
     const formik = useFormik({
         initialValues: {
@@ -11,7 +12,11 @@ const Login = ({ switchMode, loginUser }) => {
             rememberMe: false
         },
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            loginUser({ email: values.email, password: values.password }).then((response) => {
+                userMe(response.data.token).then((user) => {
+                    setLoginedUser(user.data.user)
+                })
+            });
         },
     });
 
