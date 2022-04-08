@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const client = axios.create({
-  baseURL: 'https://iqdauntest.herokuapp.com/',
-  withCredentials: true,
+export const client = axios.create({
+  baseURL: 'http://localhost:5000',
+  withCredentials: false,
 })

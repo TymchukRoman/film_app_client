@@ -3,7 +3,8 @@ import { Button, Col, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import Login from "./Login";
 import Singup from "./Signup";
-import { loginUser } from "../../store/reducers/user.reducer";
+import { setLoginedUser } from "../../store/reducers/user.reducer";
+import { Navigate } from "react-router-dom";
 
 const AuthScreen = (props) => {
 
@@ -12,6 +13,7 @@ const AuthScreen = (props) => {
     const switchMode = () => setMode(mode === 'login' ? 'signup' : 'login');
 
     return <div style={{ width: '100%' }}>
+        {props.profile.user && <Navigate to='/profile' />}
         {mode === null
             ? <div >
                 <Row className="justify-content-md-center">
@@ -28,8 +30,8 @@ const AuthScreen = (props) => {
                 </Row>
             </div>
             : mode === "login"
-                ? <Login switchMode={switchMode} loginUser={props.loginUser} />
-                : <Singup switchMode={switchMode} loginUser={props.loginUser} />
+                ? <Login switchMode={switchMode} setLoginedUser={props.setLoginedUser} />
+                : <Singup switchMode={switchMode} setLoginedUser={props.setLoginedUser} />
         }
     </div>
 }
@@ -39,4 +41,4 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 
-export default connect(mapStateToProps, { loginUser })(AuthScreen)
+export default connect(mapStateToProps, { setLoginedUser })(AuthScreen)

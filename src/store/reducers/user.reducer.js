@@ -2,7 +2,7 @@ const initialState = {
     user: null
 }
 
-export default (state = initialState, action) => {
+const userReducer = (state = initialState, action) => {
     // The reducer normally looks at the action type field to decide what happens
     switch (action.type) {
         case 'LOGIN': {
@@ -27,10 +27,13 @@ export const userActions = {
     logout: () => ({ type: 'LOGOUT' }),
 }
 
-export const loginUser = (name) => (dispatch) => {
-    dispatch(userActions.login(name));
+export const setLoginedUser = (user) => (dispatch) => {
+    console.log(user)
+    dispatch(userActions.login(user));
 }
 
 export const logoutUser = () => (dispatch) => {
     dispatch(userActions.logout())
 }
+
+export default userReducer;
