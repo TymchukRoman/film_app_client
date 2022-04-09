@@ -28,7 +28,6 @@ export const userActions = {
 }
 
 export const setLoginedUser = (user) => (dispatch) => {
-    console.log(user)
     dispatch(userActions.login(user));
 }
 
