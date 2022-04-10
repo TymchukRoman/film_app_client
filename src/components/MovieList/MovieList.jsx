@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMovies } from "../../api/movieAPI";
 import { Pagination } from "react-bootstrap";
+import SearchParams from "./SearchParams";
 
 const MovieList = () => {
 
@@ -23,6 +24,7 @@ const MovieList = () => {
     }
 
     return <>
+        <SearchParams />
         {movies
             ? <>
                 {movies.map((movie) => {
@@ -41,7 +43,6 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
     const isCurrentPageLast = currentPage === pagesCount;
 
     const changePage = number => {
-        debugger;
         if (currentPage === number) return;
         setCurrentPage(number);
         loadMovies(number);
@@ -79,7 +80,6 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
             isCurrentPageWithinTwoPageNumbers
         ) {
             isPageNumberOutOfRange = false;
-            debugger;
             return (
                 <Pagination.Item
                     key={pageNumber}
