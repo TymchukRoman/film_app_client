@@ -5,5 +5,5 @@ export const getMovies = async (page, limit) => {
 }
 
 export const searchMovies = async (params) => {
-    return client.post(`movie/search`, { params });
+    return client.post(`movie/search`, { ...params });
 }
