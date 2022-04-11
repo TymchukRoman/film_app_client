@@ -2,6 +2,8 @@ import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Form, Button, Row, Col, Container } from "react-bootstrap";
 import Select from 'react-select';
+import { searchMovies } from "../../api/movieAPI";
+import { movieGenres, movieTypes } from "../../constants/categories";
 
 const SearchParams = (props) => {
 
@@ -12,10 +14,21 @@ const SearchParams = (props) => {
             text: "",
             imdb: 1,
             genres: [],
-            type: [],
+            types: [{ "value": "movie", "label": "movie" }],
         },
         onSubmit: (values) => {
-            alert(JSON.stringify(values))
+            searchMovies({
+                year: {
+                    from: values.yearFrom,
+                    to: values.yearTo
+                },
+                text: values.text,
+                imdb: values.imdb,
+                genres: values.genres.map((item) => item.value),
+                types: values.types.map((item) => item.value)
+            }).then((response) => {
+                props.setMovies(response.data.movies)
+            })
         },
     });
 
@@ -24,7 +37,7 @@ const SearchParams = (props) => {
     }
 
     const handleTypesChange = (selected) => {
-        formik.setFieldValue("type", selected)
+        formik.setFieldValue("types", selected)
     }
 
     return <div style={{ padding: "20px" }}>
@@ -96,15 +109,7 @@ const SearchParams = (props) => {
                                 defaultValue={formik.values.genres}
                                 isMulti
                                 name="genres"
-                                options={[
-                                    {
-                                        label: "Chinese",
-                                        value: "zh-CN"
-                                    },
-                                    {
-                                        label: "English (US)",
-                                        value: "en-US"
-                                    }]}
+                                options={movieGenres.map((item) => ({ value: item, label: item }))}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
@@ -115,18 +120,10 @@ const SearchParams = (props) => {
                         <Form.Group >
                             <Select
                                 onChange={handleTypesChange}
-                                defaultValue={formik.values.genres}
+                                defaultValue={formik.values.types}
                                 isMulti
-                                name="genres"
-                                options={[
-                                    {
-                                        label: "Chinese",
-                                        value: "zh-CN"
-                                    },
-                                    {
-                                        label: "English (US)",
-                                        value: "en-US"
-                                    }]}
+                                name="types"
+                                options={movieTypes.map((item) => ({ value: item, label: item }))}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />

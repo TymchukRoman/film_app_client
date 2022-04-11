@@ -24,7 +24,7 @@ const MovieList = () => {
     }
 
     return <>
-        <SearchParams />
+        <SearchParams setMovies={setMovies} />
         {movies
             ? <>
                 {movies.map((movie) => {
