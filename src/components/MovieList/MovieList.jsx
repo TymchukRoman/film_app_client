@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getMovies } from "../../api/movieAPI";
-import { Pagination } from "react-bootstrap";
+import { getMovies, searchMovies } from "../../api/movieAPI";
+import { Pagination, Row, Col, Card } from "react-bootstrap";
 import SearchParams from "./SearchParams";
 
 const MovieList = () => {
@@ -9,6 +9,11 @@ const MovieList = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [total, setTotal] = useState(null);
+    const [params, setParams] = useState(null);
+
+    useEffect(() => {
+        loadMovies();
+    }, [params]);
 
     useEffect(() => {
         loadMovies();
@@ -17,19 +22,37 @@ const MovieList = () => {
     const loadMovies = (newPage = page, newLimit = limit) => {
         setPage(newPage);
         setLimit(newLimit);
-        getMovies(newPage, newLimit).then((response) => {
-            setMovies(response.data.movies);
-            setTotal(response.data.totalPages);
-        });
+        if (!params) {
+            console.log('No params')
+            getMovies(newPage, newLimit).then((response) => {
+                setMovies(response.data.movies);
+                setTotal(response.data.totalPages);
+            });
+        } else {
+            console.log('With params')
+            searchMovies({ params, page: newPage, limit: newLimit }).then((response) => {
+                setMovies(response.data.movies);
+                setTotal(response.data.totalPages);
+            })
+        }
     }
 
     return <>
-        <SearchParams setMovies={setMovies} />
+        <SearchParams setParams={setParams} />
         {movies
             ? <>
-                {movies.map((movie) => {
-                    return <p key={movie._id}>{movie.title}</p>
-                })}
+                <Row xs={1} md={5} style={{ padding: "20px" }}>
+                    {movies.map((movie) => {
+                        return <Col>
+                            <Card>
+                                <Card.Img variant="top" src={movie.poster} />
+                                <Card.Body>
+                                    <p>{movie.title}</p>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    })}
+                </Row>
             </>
             : <>Loading....</>}
 

@@ -1,8 +1,7 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import { Form, Button, Row, Col, Container } from "react-bootstrap";
 import Select from 'react-select';
-import { searchMovies } from "../../api/movieAPI";
 import { movieGenres, movieTypes } from "../../constants/categories";
 
 const SearchParams = (props) => {
@@ -17,7 +16,7 @@ const SearchParams = (props) => {
             types: [{ "value": "movie", "label": "movie" }],
         },
         onSubmit: (values) => {
-            searchMovies({
+            props.setParams({
                 year: {
                     from: values.yearFrom,
                     to: values.yearTo
@@ -26,9 +25,7 @@ const SearchParams = (props) => {
                 imdb: values.imdb,
                 genres: values.genres.map((item) => item.value),
                 types: values.types.map((item) => item.value)
-            }).then((response) => {
-                props.setMovies(response.data.movies)
-            })
+            });
         },
     });
 
@@ -43,7 +40,7 @@ const SearchParams = (props) => {
     return <div style={{ padding: "20px" }}>
         <Form onSubmit={formik.handleSubmit}>
             <Container>
-                <Row>
+                <Row style={{ padding: "20px" }}>
                     <Col>
                         <Form.Group>
                             <Form.Label>Search by text</Form.Label>
@@ -133,6 +130,11 @@ const SearchParams = (props) => {
                     <Col>
                         <Button variant="success" type="submit">
                             Submit
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button variant="success" onClick={() => { props.setParams(null) }}>
+                            Clear search
                         </Button>
                     </Col>
                 </Row>
