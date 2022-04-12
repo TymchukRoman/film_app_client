@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getMovies, searchMovies } from "../../api/movieAPI";
 import { Pagination, Row, Col, Card } from "react-bootstrap";
 import SearchParams from "./SearchParams";
+import { Link } from "react-router-dom";
 
 const MovieList = () => {
 
@@ -13,10 +14,12 @@ const MovieList = () => {
 
     useEffect(() => {
         loadMovies();
+        //eslint-disable-next-line 
     }, [params]);
 
     useEffect(() => {
         loadMovies();
+        //eslint-disable-next-line 
     }, []);
 
     const loadMovies = (newPage = page, newLimit = limit) => {
@@ -43,10 +46,10 @@ const MovieList = () => {
             ? <>
                 <Row xs={1} md={5} style={{ padding: "20px" }}>
                     {movies.map((movie) => {
-                        return <Col>
+                        return <Col as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black' }}>
                             <Card>
                                 <Card.Img variant="top" src={movie.poster} />
-                                <Card.Body>
+                                <Card.Body >
                                     <p>{movie.title}</p>
                                 </Card.Body>
                             </Card>
@@ -122,6 +125,7 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
         return null;
     });
 
+    //eslint-disable-next-line 
     useEffect(setLastPageAsCurrent, [pagesCount]);
 
     return (

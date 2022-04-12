@@ -1,5 +1,6 @@
 import AuthScreen from "../Auth/AuthScreen";
 import General from "../General/General";
+import Movie from "../Movie/Movie";
 import MovieList from "../MovieList/MovieList";
 import Profile from "../Profile/Profile";
 
@@ -23,6 +24,11 @@ const routes = [
         path: '/auth',
         exact: false,
         component: <AuthScreen />
+    },
+    {
+        path: '/movie/:movieId',
+        exact: false,
+        component: <Movie />
     }
 ]
 
