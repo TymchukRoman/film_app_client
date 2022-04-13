@@ -8,12 +8,16 @@ const SearchParams = (props) => {
 
     const formik = useFormik({
         initialValues: {
-            yearFrom: 1800,
-            yearTo: 2020,
-            text: "",
-            imdb: 1,
-            genres: [],
-            types: [{ "value": "movie", "label": "movie" }],
+            yearFrom: props.initialParams?.year?.from || 1900,
+            yearTo: props.initialParams?.year?.from || 2016,
+            text: props.initialParams?.text || "",
+            imdb: props.initialParams?.imdb || 1,
+            genres: props.initialParams?.genres?.length
+                ? [...props.initialParams.genres.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            types: props.initialParams?.types?.length
+                ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
+                : [{ "value": "movie", "label": "movie" }],
         },
         onSubmit: (values) => {
             props.setParams({

@@ -3,29 +3,28 @@ import { getMovies, searchMovies } from "../../api/movieAPI";
 import { Pagination, Row, Col, Card } from "react-bootstrap";
 import SearchParams from "./SearchParams";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { setParams, setPage, setLimit, setSort } from "../../store/reducers/search.reducer";
 
-const MovieList = () => {
+const MovieList = (props) => {
 
     const [movies, setMovies] = useState(null);
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
     const [total, setTotal] = useState(null);
-    const [params, setParams] = useState(null);
 
     useEffect(() => {
         loadMovies();
         //eslint-disable-next-line 
-    }, [params]);
+    }, [props.search?.params]);
 
     useEffect(() => {
         loadMovies();
         //eslint-disable-next-line 
     }, []);
 
-    const loadMovies = (newPage = page, newLimit = limit) => {
-        setPage(newPage);
-        setLimit(newLimit);
-        if (!params) {
+    const loadMovies = (newPage = props.search?.page || 1, newLimit = props.search?.limit || 10) => {
+        props.setPage(newPage);
+        props.setLimit(newLimit);
+        if (!props.search?.params) {
             console.log('No params')
             getMovies(newPage, newLimit).then((response) => {
                 setMovies(response.data.movies);
@@ -33,7 +32,7 @@ const MovieList = () => {
             });
         } else {
             console.log('With params')
-            searchMovies({ params, page: newPage, limit: newLimit }).then((response) => {
+            searchMovies({ params: props.search?.params || {}, page: newPage, limit: newLimit }).then((response) => {
                 setMovies(response.data.movies);
                 setTotal(response.data.totalPages);
             })
@@ -41,12 +40,14 @@ const MovieList = () => {
     }
 
     return <>
-        <SearchParams setParams={setParams} />
+        <SearchParams
+            initialParams={props.search?.params ? props.search?.params : null}
+            setParams={props.setParams} />
         {movies
             ? <>
                 <Row xs={1} md={5} style={{ padding: "20px" }}>
                     {movies.map((movie) => {
-                        return <Col as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black' }}>
+                        return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black' }}>
                             <Card>
                                 <Card.Img variant="top" src={movie.poster} />
                                 <Card.Body >
@@ -59,7 +60,11 @@ const MovieList = () => {
             </>
             : <>Loading....</>}
 
-        {total && <PaginationComponent pagesCount={total} currentPage={page} setCurrentPage={setPage} loadMovies={loadMovies} />}
+        {total && <PaginationComponent
+            pagesCount={total}
+            currentPage={props.search?.page ? props.search.page : 1}
+            setCurrentPage={props.setPage}
+            loadMovies={loadMovies} />}
     </>
 }
 
@@ -147,4 +152,10 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
     );
 };
 
-export default MovieList;
+
+
+const mapStateToProps = (state, ownProps) => ({
+    ...state
+})
+
+export default connect(mapStateToProps, { setParams, setPage, setLimit, setSort })(MovieList)
