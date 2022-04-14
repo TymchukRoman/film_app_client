@@ -9,7 +9,7 @@ const SearchParams = (props) => {
     const formik = useFormik({
         initialValues: {
             yearFrom: props.initialParams?.year?.from || 1900,
-            yearTo: props.initialParams?.year?.from || 2016,
+            yearTo: props.initialParams?.year?.to || 2016,
             text: props.initialParams?.text || "",
             imdb: props.initialParams?.imdb || 1,
             genres: props.initialParams?.genres?.length
