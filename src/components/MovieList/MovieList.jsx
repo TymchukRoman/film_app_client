@@ -5,6 +5,7 @@ import SearchParams from "./SearchParams";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setParams, setPage, setLimit, setSort } from "../../store/reducers/search.reducer";
+import imageExists from "image-exists";
 
 const MovieList = (props) => {
 
@@ -47,9 +48,9 @@ const MovieList = (props) => {
             ? <>
                 <Row xs={1} md={5} style={{ padding: "20px" }}>
                     {movies.map((movie) => {
-                        return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black' }}>
-                            <Card>
-                                <Card.Img variant="top" src={movie.poster} />
+                        return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
+                            <Card className={'h-100'}>
+                                <ImageComponent image={movie.poster} />
                                 <Card.Body >
                                     <p>{movie.title}</p>
                                 </Card.Body>
@@ -152,7 +153,17 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
     );
 };
 
-
+const ImageComponent = (props) => {
+    const [image, setImage] = useState("https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png");
+    useEffect(() => {
+        imageExists(props.image, (exists) => {
+            if (exists) {
+                setImage(props.image);
+            }
+        })
+    }, [])
+    return <Card.Img variant="top" src={image} alt={"Some image"} style={{ minHeight: "60vh", maxHeight: "60vh" }} />
+}
 
 const mapStateToProps = (state, ownProps) => ({
     ...state
