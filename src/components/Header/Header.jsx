@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 
 const Header = (props) => {
 
+    //eslint-disable-next-line
     const [collapsed, setCollapsed] = useState(true);
 
     return <>

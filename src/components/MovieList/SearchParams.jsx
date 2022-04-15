@@ -9,7 +9,7 @@ const SearchParams = (props) => {
     const formik = useFormik({
         initialValues: {
             yearFrom: props.initialParams?.year?.from || 1900,
-            yearTo: props.initialParams?.year?.to || 2016,
+            yearTo: props.initialParams?.year?.to || 2017,
             text: props.initialParams?.text || "",
             imdb: props.initialParams?.imdb || 1,
             genres: props.initialParams?.genres?.length
@@ -32,6 +32,16 @@ const SearchParams = (props) => {
             });
         },
     });
+
+    const clearParams = () => {
+        formik.setFieldValue('yearFrom', 1800);
+        formik.setFieldValue('yearTo', 2017);
+        formik.setFieldValue('text', '');
+        formik.setFieldValue('imdb', 1);
+        formik.setFieldValue('genres', []);
+        formik.setFieldValue('types', [{ "value": "movie", "label": "movie" }]);
+        props.setParams(null)
+    }
 
     const handleGenresChange = (selected) => {
         formik.setFieldValue("genres", selected)
@@ -137,7 +147,7 @@ const SearchParams = (props) => {
                         </Button>
                     </Col>
                     <Col>
-                        <Button variant="success" onClick={() => { props.setParams(null) }}>
+                        <Button variant="success" onClick={clearParams}>
                             Clear search
                         </Button>
                     </Col>

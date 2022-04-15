@@ -12,7 +12,6 @@ const App = (props) => {
 
     useEffect(() => {
         const token = localStorage.getItem('auth_token');
-        console.log(token);
         if (!token) {
             setIsUserLoaded(true);
         } else {
@@ -23,6 +22,7 @@ const App = (props) => {
                 setIsUserLoaded(true);
             });
         }
+        //eslint-disable-next-line
     }, [])
 
     return <>

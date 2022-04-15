@@ -13,7 +13,7 @@ const Login = ({ switchMode, setLoginedUser }) => {
         },
         onSubmit: (values) => {
             loginUser({ email: values.email, password: values.password }).then((response) => {
-                if(values.rememberMe) localStorage.setItem('auth_token', response.data.token);
+                localStorage.setItem('auth_token', response.data.token);
                 userMe(response.data.token).then((user) => {
                     setLoginedUser(user.data.user)
                 })
