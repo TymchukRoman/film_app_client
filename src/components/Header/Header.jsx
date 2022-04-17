@@ -28,6 +28,9 @@ const NavCollapsed = ({ user }) => {
             <Nav.Link as={Link} to="/movies">
                 Movies
             </Nav.Link >
+            <Nav.Link as={Link} to="/favorites">
+                Favorites
+            </Nav.Link >
         </Nav>
         <Navbar.Text className="justify-content-end">
             {user

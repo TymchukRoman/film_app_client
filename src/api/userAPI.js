@@ -11,3 +11,13 @@ export const loginUser = async (data) => {
 export const registerUser = async (data) => {
     return client.post('/user/register', { ...data })
 }
+
+export const getFavorites = async (token) => {
+    return client.post('/user/favorites', { token })
+}
+
+export const editFavorite = async (token, type, movieId) => {
+    return client.post('/user/editfavorite', {
+        token, type, movieId
+    })
+}

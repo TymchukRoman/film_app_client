@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 
 const App = (props) => {
 
+    const [toLoginRedirect, setLoginRedirect] = useState(false);
+
     const [isUserLoaded, setIsUserLoaded] = useState(false);
 
     useEffect(() => {
@@ -20,6 +22,9 @@ const App = (props) => {
                     props.setLoginedUser(response.data.user);
                 }
                 setIsUserLoaded(true);
+                if (response?.data?.status === 401) {
+                    setLoginRedirect(true);
+                }
             });
         }
         //eslint-disable-next-line
@@ -28,7 +33,7 @@ const App = (props) => {
     return <>
         {
             isUserLoaded
-                ? <RootRouter />
+                ? <RootRouter toLoginRedirect={toLoginRedirect} setLoginRedirect={setLoginRedirect} />
                 : <>Loading</>
         }
     </>

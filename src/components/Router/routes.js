@@ -1,4 +1,5 @@
 import AuthScreen from "../Auth/AuthScreen";
+import Favorites from "../Favorites/Favorites";
 import General from "../General/General";
 import Movie from "../Movie/Movie";
 import MovieList from "../MovieList/MovieList";
@@ -29,6 +30,11 @@ const routes = [
         path: '/movie/:movieId',
         exact: false,
         component: <Movie />
+    },
+    {
+        path: '/favorites',
+        exact: true,
+        component: <Favorites />
     }
 ]
 

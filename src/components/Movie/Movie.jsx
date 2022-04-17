@@ -5,6 +5,7 @@ import { getMovie } from "../../api/movieAPI";
 import { Container, Row, Col, Card, Badge, Form, Button } from "react-bootstrap";
 import { getComments, newComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
+import { editFavorite } from "../../api/userAPI";
 
 const Movie = (props) => {
 
@@ -13,6 +14,29 @@ const Movie = (props) => {
     const [movie, setMovie] = useState(null);
     const [moreExpanded, setMoreExpanded] = useState(false);
     const [comments, setComments] = useState([]);
+    const [isFavorite, setIsFavorite] = useState(true);
+
+
+    useEffect(() => {
+        setIsFavorite(props.profile?.user?.favorites?.includes(movieId));
+    }, [])
+
+    const switchFavorite = () => {
+
+        const token = localStorage.getItem('auth_token');
+
+        if (!token) return false;
+
+        if (isFavorite) {
+            setIsFavorite(false);
+            editFavorite(token, 'remove', movieId);
+        } else {
+            setIsFavorite(true);
+            editFavorite(token, 'add', movieId);
+        }
+
+    }
+
 
     useEffect(() => {
         if (movieId) {
@@ -81,6 +105,9 @@ const Movie = (props) => {
                             </Row>
                             <Row>
                                 <p>Genres: {movie.genres.map(actor => <Badge key={actor} bg="success" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                            </Row>
+                            <Row>
+                                <Button onClick={switchFavorite}>{isFavorite ? "Remove from fav" : "Add to fav"}</Button>
                             </Row>
                         </Container>
                     </Col>
