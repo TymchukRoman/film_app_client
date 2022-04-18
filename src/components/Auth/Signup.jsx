@@ -1,9 +1,10 @@
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { registerUser } from "../../api/userAPI";
 
 const Singup = ({ switchMode, setLoginedUser }) => {
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -13,15 +14,19 @@ const Singup = ({ switchMode, setLoginedUser }) => {
         },
         onSubmit: (values) => {
             registerUser({ email: values.email, password: values.password, name: values.username }).then((response) => {
-                setLoginedUser(response.data);
+                if (response.data?.token && response.data?.user) {
+                    localStorage.setItem('auth_token', response.data.token)
+                    setLoginedUser(response.data.user);
+                } else {
+                    console.log(response.data);
+                }
             });
         },
     });
 
     return <div className="col-md-5 mx-auto" style={{ padding: "20px" }}>
         <Form id={"signup-form"} onSubmit={formik.handleSubmit} autoComplete="off">
-
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                     type="email"
@@ -34,7 +39,7 @@ const Singup = ({ switchMode, setLoginedUser }) => {
                 </Form.Text>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
                     type="text"
