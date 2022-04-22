@@ -4,6 +4,7 @@ import General from "../General/General";
 import Movie from "../Movie/Movie";
 import MovieList from "../MovieList/MovieList";
 import Profile from "../Profile/Profile";
+import RandomMovie from "../RandomMovie/RandomMovie";
 
 const routes = [
     {
@@ -35,6 +36,11 @@ const routes = [
         path: '/favorites',
         exact: true,
         component: <Favorites />
+    },
+    {
+        path: '/random',
+        exact: true,
+        component: <RandomMovie />
     }
 ]
 

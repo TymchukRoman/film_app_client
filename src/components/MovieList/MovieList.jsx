@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setParams, setPage, setLimit, setSort } from "../../store/reducers/search.reducer";
 import ImageComponent from "../helpers/imageComponent";
+import Preloader from "../helpers/Preloader";
 
 const MovieList = (props) => {
 
@@ -59,7 +60,7 @@ const MovieList = (props) => {
                     })}
                 </Row>
             </>
-            : <>Loading....</>}
+            : <Preloader />}
 
         {total && <PaginationComponent
             pagesCount={total}

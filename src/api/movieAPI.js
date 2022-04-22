@@ -11,3 +11,19 @@ export const getMovie = async (movieId) => {
 export const searchMovies = async (params) => {
     return client.post(`movie/search`, { ...params });
 }
+
+export const getTopMovies = async () => {
+    return client.get(`movie/top/hot`);
+}
+
+export const getLatestMovies = async () => {
+    return client.get(`movie/top/latest`);
+}
+
+export const getRandomMovie = async () => {
+    return client.get(`movie/random`);
+}
+
+export const getCategorieMovies = async () => {
+    return client.get(`movie/categories`);
+}

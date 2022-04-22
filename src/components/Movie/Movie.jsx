@@ -6,6 +6,8 @@ import { Container, Row, Col, Card, Badge, Form, Button } from "react-bootstrap"
 import { getComments, newComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
+import ImageComponent from "../helpers/imageComponent";
+import Preloader from "../helpers/Preloader";
 
 const Movie = (props) => {
 
@@ -68,13 +70,13 @@ const Movie = (props) => {
         },
     });
 
-    return <div>
+    return <div style={{ marginTop: '20px' }}   >
         {movie
             ? <Container>
                 <Row>
                     <Col>
                         <Card>
-                            <Card.Img variant="top" src={movie.poster} />
+                            <ImageComponent image={movie.poster} />
                         </Card>
                     </Col>
                     <Col xs={9}>
@@ -156,7 +158,7 @@ const Movie = (props) => {
                     </Col>
                 </Row>
             </Container >
-            : <p>Loading...</p>
+            : <Preloader />
         }
     </div >
 }
