@@ -17,7 +17,7 @@ const SearchParams = (props) => {
                 : [],
             types: props.initialParams?.types?.length
                 ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
-                : [{ "value": "movie", "label": "movie" }],
+                : [],
         },
         onSubmit: (values) => {
             props.setParams({

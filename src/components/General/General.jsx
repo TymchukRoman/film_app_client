@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { Container, Row, Col, Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { getCategorieMovies, getLatestMovies, getRandomMovie, getTopMovies } from "../../api/movieAPI";
+import { Link, Navigate } from "react-router-dom";
+import { getCategorieMovies, getLatestMovies, getTopMovies } from "../../api/movieAPI";
 import ImageComponent from "../helpers/imageComponent";
 import { movieGenres } from "../../constants/categories";
 import Preloader from "../helpers/Preloader";
+import { connect } from "react-redux";
+import { setParams } from "../../store/reducers/search.reducer";
 
-const General = () => {
+const General = (props) => {
 
     const [topMovies, setTopMovies] = useState([]);
     const [latesMovies, setLatestMovies] = useState([]);
     const [categorieMovies, setCategorieMovies] = useState([]);
+    const [navigateTo, setNavigateTo] = useState(null);
 
     useEffect(() => {
         getTopMovies().then((response) => {
@@ -32,6 +35,13 @@ const General = () => {
         });
     }, []);
 
+    const navigateToCategorie = (categorie) => {
+        props.setParams({
+            genres: [categorie]
+        });
+        setNavigateTo(<Navigate to={"/movies"} />)
+    }
+
     return <Container>
         <Row>
             <h1>Hot</h1>
@@ -43,8 +53,9 @@ const General = () => {
         </Row>
         <Row>
             <h1>Categories</h1>
-            <CategoriesCarousel movies={categorieMovies} />
+            <CategoriesCarousel movies={categorieMovies} navigateToCategorie={navigateToCategorie} />
         </Row>
+        {navigateTo ? navigateTo : <></>}
     </Container>
 }
 
@@ -83,9 +94,8 @@ const CarouselComponent = (props) => {
                         <Card as={Link} to={`/movie/${movie._id}`} className={'h-100'} style={{ textDecoration: 'none', color: 'black' }}>
                             <ImageComponent image={movie.poster} />
                             <Card.Body>
-                                <p title={movie.title}>
+                                <p title={`${movie.title} (${movie.year})`}>
                                     {movie.title.length > 20 ? `${movie.title.slice(0, 20)}... ` : `${movie.title} `}
-                                    <b>({movie.year})</b>
                                 </p>
                             </Card.Body>
                         </Card>
@@ -127,7 +137,7 @@ const CategoriesCarousel = (props) => {
             ? movieGenres.map((genre) => {
                 return <div title={props.movies[`${genre}`].title} key={genre}>
                     <Col style={{ textDecoration: 'none', color: 'black', padding: "5px" }}>
-                        <Card className={'h-100'}>
+                        <Card className={'h-100'} onClick={() => { props.navigateToCategorie(genre) }}>
                             <ImageComponent image={props.movies[`${genre}`].poster} />
                             <Card.Body>
                                 <p title={genre}>
@@ -143,4 +153,8 @@ const CategoriesCarousel = (props) => {
     </Carousel>
 }
 
-export default General;
+const mapStateToProps = (state, ownProps) => ({
+    ...state
+})
+
+export default connect(mapStateToProps, { setParams })(General);
