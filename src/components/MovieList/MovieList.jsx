@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getMovies, searchMovies } from "../../api/movieAPI";
-import { Pagination, Row, Col, Card } from "react-bootstrap";
+import { Pagination, Row, Col, Card, Container } from "react-bootstrap";
 import SearchParams from "./SearchParams";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -10,8 +10,11 @@ import Preloader from "../helpers/Preloader";
 
 const MovieList = (props) => {
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     const [movies, setMovies] = useState(null);
     const [total, setTotal] = useState(null);
+    const [moviesNumber, setMoviesNumber] = useState(0);
 
     useEffect(() => {
         loadMovies();
@@ -27,16 +30,16 @@ const MovieList = (props) => {
         props.setPage(newPage);
         props.setLimit(newLimit);
         if (!props.search?.params) {
-            console.log('No params')
             getMovies(newPage, newLimit).then((response) => {
                 setMovies(response.data.movies);
                 setTotal(response.data.totalPages);
+                setMoviesNumber(response.data.total);
             });
         } else {
-            console.log('With params')
             searchMovies({ params: props.search?.params || {}, page: newPage, limit: newLimit }).then((response) => {
                 setMovies(response.data.movies);
                 setTotal(response.data.totalPages);
+                setMoviesNumber(response.data.total);
             })
         }
     }
@@ -45,22 +48,27 @@ const MovieList = (props) => {
         <SearchParams
             initialParams={props.search?.params ? props.search?.params : null}
             setParams={props.setParams} />
-        {movies
-            ? <>
-                <Row xs={1} md={5} style={{ padding: "20px" }}>
-                    {movies.map((movie) => {
-                        return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
-                            <Card className={'h-100'}>
-                                <ImageComponent image={movie.poster} />
-                                <Card.Body >
-                                    <p>{movie.title}</p>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    })}
-                </Row>
-            </>
-            : <Preloader />}
+        <Container style={{ padding: "20px" }}>
+            <h3 >Found {moviesNumber} movies</h3>
+            {movies
+                ? <>
+                    <Row xs={1} md={5} >
+                        {movies.map((movie) => {
+                            return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
+                                <Card className={'text-center'}>
+                                    <ImageComponent image={movie.poster} />
+                                    <Card.Body >
+                                        <p title={`${movie.title} (${movie.year})`}>
+                                            {movie.title.length > 20 ? `${movie.title.slice(0, 20)}... ` : `${movie.title} `}
+                                        </p>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        })}
+                    </Row>
+                </>
+                : <Preloader />}
+        </Container>
 
         {total && <PaginationComponent
             pagesCount={total}

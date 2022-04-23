@@ -21,6 +21,7 @@ const Movie = (props) => {
 
     useEffect(() => {
         setIsFavorite(props.profile?.user?.favorites?.includes(movieId));
+        //eslint-disable-next-line
     }, [])
 
     const switchFavorite = () => {
