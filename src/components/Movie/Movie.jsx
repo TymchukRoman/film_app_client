@@ -17,10 +17,30 @@ const Movie = (props) => {
     const [moreExpanded, setMoreExpanded] = useState(false);
     const [comments, setComments] = useState([]);
     const [isFavorite, setIsFavorite] = useState(true);
+    const [isCommentLoading, setIsCommentLoading] = useState(false);
 
 
     useEffect(() => {
         setIsFavorite(props.profile?.user?.favorites?.includes(movieId));
+
+        let lastViews = localStorage.getItem('lastViews');
+        if (!lastViews) {
+            lastViews = [movieId];
+        } else {
+            try {
+                lastViews = JSON.parse(lastViews);
+                if (lastViews.includes(movieId)) {
+                    lastViews = lastViews.filter(item => item !== movieId);
+                    lastViews.unshift(movieId);
+                } else {
+                    lastViews = [movieId, ...lastViews.slice(0, 4)];
+                }
+            } catch (e) {
+                lastViews = [movieId];
+            }
+        }
+        localStorage.setItem('lastViews', JSON.stringify(lastViews));
+
         //eslint-disable-next-line
     }, [])
 
@@ -37,9 +57,13 @@ const Movie = (props) => {
             setIsFavorite(true);
             editFavorite(token, 'add', movieId);
         }
-
     }
 
+    const minToHour = (mins) => {
+        const hours = Math.floor(mins / 60);
+        const minutes = mins - hours * 60;
+        return `${hours ? `${hours}h ` : ''}${minutes}m`
+    }
 
     useEffect(() => {
         if (movieId) {
@@ -58,15 +82,18 @@ const Movie = (props) => {
         initialValues: {
             comment: "",
         },
-        onSubmit: (values) => {
+        onSubmit: (values, { resetForm }) => {
+            setIsCommentLoading(true);
             newComment(movieId, values.comment).then((response) => {
                 if (response?.data?.error) {
                     alert(JSON.stringify(response.data.error));
                 } else {
                     getComments(movieId).then(response => {
                         setComments(response.data.comments.sort((a, b) => new Date(b.date) - new Date(a.date)));
+                        resetForm({});
                     })
                 }
+                setIsCommentLoading(false);
             })
         },
     });
@@ -83,7 +110,33 @@ const Movie = (props) => {
                     <Col xs={9}>
                         <Container>
                             <Row>
-                                <h3>{movie.title} ({movie.year})</h3>
+                                <Col xs={6}>
+                                    <h4>
+                                        {movie.title}
+                                        <Badge
+                                            bg="light"
+                                            text="dark"
+                                            pill
+                                            style={{ marginLeft: "20px", marginBottom: "2px" }}
+                                            title={movie.released}
+                                        >
+                                            {movie.year}
+                                        </Badge>
+                                    </h4>
+                                </Col>
+                                <Col>
+                                    <Button
+                                        variant="warning"
+                                        style={{ marginLeft: "20px" }}
+                                        title={movie.imdb.votes ? `${movie.imdb.votes} votes` : ''}
+                                    >
+                                        {movie.imdb.rating ? `${movie.imdb.rating} on IMDB` : 'Not rated'}
+
+                                    </Button>
+                                </Col>
+                                <Col>
+                                    <Button variant={isFavorite ? 'danger' : 'outline-danger'} onClick={switchFavorite}>{isFavorite ? "Remove from fav" : "Add to fav"}</Button>
+                                </Col>
                             </Row>
                             <Row>
                                 {moreExpanded
@@ -103,14 +156,33 @@ const Movie = (props) => {
                                     </p>
                                 }
                             </Row>
+                            {movie.cast?.length > 0 &&
+                                <Row>
+                                    <p>Cast: {movie.cast.map((actor, index) => <Badge key={`${actor}${index}`} bg="dark" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                </Row>
+                            }
+                            {movie.genres?.length > 0 &&
+                                <Row>
+                                    <p>Genres: {movie.genres.map((actor, index) => <Badge key={`${actor}${index}`} bg="success" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                </Row>
+                            }
+                            {movie.countries?.length > 0 &&
+                                <Row>
+                                    <p>Countries: {movie.countries.map((actor, index) => <Badge key={`${actor}${index}`} bg="info" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                </Row>
+                            }
+                            {movie.directors?.length > 0 &&
+                                <Row>
+                                    <p>Directors: {movie.directors.map((actor, index) => <Badge key={`${actor}${index}`} bg="danger" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                </Row>
+                            }
+                            {movie.writers?.length > 0 &&
+                                <Row>
+                                    <p>Writers: {movie.writers.map((actor, index) => <Badge key={`${actor}${index}`} pill bg="danger" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                </Row>
+                            }
                             <Row>
-                                <p>Cast: {movie.cast.map(actor => <Badge key={actor} bg="dark" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
-                            </Row>
-                            <Row>
-                                <p>Genres: {movie.genres.map(actor => <Badge key={actor} bg="success" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
-                            </Row>
-                            <Row>
-                                <Button onClick={switchFavorite}>{isFavorite ? "Remove from fav" : "Add to fav"}</Button>
+                                <p>Runtime: {minToHour(movie.runtime)}</p>
                             </Row>
                         </Container>
                     </Col>
@@ -121,7 +193,7 @@ const Movie = (props) => {
                             <h4>Comments</h4>
                         </Row>
                         <Row>
-                            <Form onSubmit={formik.handleSubmit}>
+                            <Form onSubmit={formik.handleSubmit} >
                                 <Row>
                                     <Col>
                                         <Form.Group>
@@ -129,11 +201,12 @@ const Movie = (props) => {
                                                 type="text"
                                                 name="comment"
                                                 onChange={formik.handleChange}
-                                                value={formik.values.comment} />
+                                                value={formik.values.comment}
+                                                disabled={isCommentLoading} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
-                                        <Button variant="success" type="submit">
+                                        <Button variant="success" type="submit" disabled={isCommentLoading}>
                                             Submit
                                         </Button>
                                     </Col>
@@ -145,11 +218,19 @@ const Movie = (props) => {
                                 ? <div>
                                     {comments.map((comment) => {
                                         return <Card key={comment._id} style={{ marginTop: '10px' }} className={`mb-2`} >
-                                            <Card.Header>{comment.name}</Card.Header>
+                                            <Card.Header>
+                                                <Row>
+                                                    <Col>
+                                                        {comment.name}
+                                                    </Col>
+                                                    <Col className={'text-center text-muted'}>
+                                                        {comment.date}
+                                                    </Col>
+                                                </Row>
+                                            </Card.Header>
                                             <Card.Body>
                                                 {comment.text}
                                             </Card.Body>
-                                            <Card.Footer className="text-muted">{comment.date}</Card.Footer>
                                         </Card>
                                     })}
                                 </div>

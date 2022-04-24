@@ -27,3 +27,7 @@ export const getRandomMovie = async () => {
 export const getCategorieMovies = async () => {
     return client.get(`movie/categories`);
 }
+
+export const getManyMovies = async (movieIds) => {
+    return client.post(`movie/ids`, { movieIds });
+}

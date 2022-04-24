@@ -5,7 +5,6 @@ export const getComments = async (movieId) => {
 }
 
 export const newComment = async (movieId, text) => {
-    console.log(movieId, text)
     const token = localStorage.getItem('auth_token');
     return client.post('/comment/new', {
         token, movieId, text
