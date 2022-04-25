@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import React from "react";
-import { Form, Button, Row, Col, Container } from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge } from "react-bootstrap";
 import Select from 'react-select';
 import { movieGenres, movieTypes } from "../../constants/categories";
 
@@ -52,109 +52,129 @@ const SearchParams = (props) => {
     }
 
     return <div style={{ padding: "20px" }}>
-        <Form onSubmit={formik.handleSubmit}>
-            <Container>
-                <Row style={{ padding: "20px" }}>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Search by text</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="text"
-                                onChange={formik.handleChange}
-                                value={formik.values.text} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Range</Form.Label>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <Form.Control
-                                            type="number"
-                                            name="yearFrom"
-                                            onChange={formik.handleChange}
-                                            value={formik.values.yearFrom} />
-                                    </Col>
-                                    <Col>
-                                        <Form.Control
-                                            type="number"
-                                            name="yearTo"
-                                            onChange={formik.handleChange}
-                                            value={formik.values.yearTo} />
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </Form.Group>
-                    </Col>
-
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>IMDB minimal rating</Form.Label>
-                            <Row>
+        <Accordion>
+            <Accordion.Item eventKey="0">
+                <Accordion.Header>
+                    Search params {props.isUsed ? <Badge bg="info" style={{ marginLeft: "10px" }}>Active</Badge> : " "}
+                </Accordion.Header>
+                <Accordion.Body style={{ padding: "20px" }}>
+                    <Form onSubmit={formik.handleSubmit}>
+                        <Container>
+                            <Row style={{ marginTop: "20px" }}>
                                 <Col>
-                                    <Form.Range
-                                        min={0}
-                                        max={10}
-                                        name="imdb"
-                                        onChange={formik.handleChange}
-                                        value={formik.values.imdb} />
-
+                                    <Form.Group>
+                                        <Form.Label>Search by text</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="text"
+                                            onChange={formik.handleChange}
+                                            value={formik.values.text} />
+                                    </Form.Group>
                                 </Col>
-                                <Col xs="3">
-                                    <Form.Control
-                                        name="imdb"
-                                        disabled={true}
-                                        value={formik.values.imdb} />
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>Range</Form.Label>
+                                        <Container>
+                                            <Row>
+                                                <Col>
+                                                    <Form.Control
+                                                        type="number"
+                                                        name="yearFrom"
+                                                        onChange={formik.handleChange}
+                                                        value={formik.values.yearFrom} />
+                                                </Col>
+                                                <Col>
+                                                    <Form.Control
+                                                        type="number"
+                                                        name="yearTo"
+                                                        onChange={formik.handleChange}
+                                                        value={formik.values.yearTo} />
+                                                </Col>
+                                            </Row>
+                                        </Container>
+                                    </Form.Group>
+                                </Col>
+
+                                <Col>
+                                    <Form.Group>
+                                        <Form.Label>IMDB minimal rating</Form.Label>
+                                        <Row>
+                                            <Col>
+                                                <Form.Range
+                                                    min={0}
+                                                    max={10}
+                                                    name="imdb"
+                                                    onChange={formik.handleChange}
+                                                    value={formik.values.imdb} />
+
+                                            </Col>
+                                            <Col xs="3">
+                                                <Form.Control
+                                                    name="imdb"
+                                                    disabled={true}
+                                                    value={formik.values.imdb} />
+                                            </Col>
+                                        </Row>
+                                    </Form.Group>
                                 </Col>
                             </Row>
-                        </Form.Group>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Form.Group >
-                            <Select
-                                onChange={handleGenresChange}
-                                defaultValue={formik.values.genres}
-                                isMulti
-                                name="genres"
-                                options={movieGenres.map((item) => ({ value: item, label: item }))}
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                            />
+                            <Row style={{ marginTop: "20px" }}>
+                                <Col>
+                                    <Form.Group >
+                                        <Select
+                                            onChange={handleGenresChange}
+                                            defaultValue={formik.values.genres}
+                                            isMulti
+                                            name="genres"
+                                            options={movieGenres.map((item) => ({ value: item, label: item }))}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                        />
 
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group >
-                            <Select
-                                onChange={handleTypesChange}
-                                defaultValue={formik.values.types}
-                                isMulti
-                                name="types"
-                                options={movieTypes.map((item) => ({ value: item, label: item }))}
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                            />
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group >
+                                        <Select
+                                            onChange={handleTypesChange}
+                                            defaultValue={formik.values.types}
+                                            isMulti
+                                            name="types"
+                                            options={movieTypes.map((item) => ({ value: item, label: item }))}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                        />
 
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Button variant="success" type="submit">
-                            Submit
-                        </Button>
-                    </Col>
-                    <Col>
-                        <Button variant="success" onClick={clearParams}>
-                            Clear search
-                        </Button>
-                    </Col>
-                </Row>
-            </Container>
-        </Form>
-    </div>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: "20px" }}>
+                                <Col>
+
+                                </Col>
+                                <Col>
+                                </Col>
+                                <Col>
+                                    <ButtonGroup >
+                                        <Button variant="outline-warning" onClick={clearParams}>
+                                            Clear search
+                                        </Button>
+                                        <Button variant="outline-success" type="submit">
+                                            Submit
+                                        </Button>
+                                    </ButtonGroup>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </Form>
+                </Accordion.Body>
+            </Accordion.Item>
+        </Accordion>
+
+    </div >
 }
 
 export default SearchParams;

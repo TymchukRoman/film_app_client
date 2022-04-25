@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getMovies, searchMovies } from "../../api/movieAPI";
-import { Pagination, Row, Col, Card, Container } from "react-bootstrap";
+import { Pagination, Row, Col, Card, Container, Overlay, Popover, FormControl, InputGroup, Button } from "react-bootstrap";
 import SearchParams from "./SearchParams";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -47,6 +47,7 @@ const MovieList = (props) => {
     return <>
         <SearchParams
             initialParams={props.search?.params ? props.search?.params : null}
+            isUsed={props.search?.isUsed}
             setParams={props.setParams} />
         <Container style={{ padding: "20px" }}>
             <h3 >Found {moviesNumber} movies</h3>
@@ -83,8 +84,20 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
     const isCurrentPageFirst = currentPage === 1;
     const isCurrentPageLast = currentPage === pagesCount;
 
+    const [show, setShow] = useState(false);
+    const [target, setTarget] = useState(null);
+    const ref = useRef(null);
+    const [pageInput, setPageInput] = useState(currentPage);
+
+    const handleClick = (event) => {
+        setShow(!show);
+        setTarget(event.target);
+    };
+
     const changePage = number => {
         if (currentPage === number) return;
+        if (number < 1) number = 1;
+        if (number > pagesCount) number = pagesCount;
         setCurrentPage(number);
         loadMovies(number);
     };
@@ -105,6 +118,10 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
         if (currentPage > pagesCount) {
             setCurrentPage(pagesCount);
         }
+    };
+
+    const handleInputChange = e => {
+        setPageInput(e.target.value);
     };
 
     let isPageNumberOutOfRange;
@@ -134,7 +151,7 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
 
         if (!isPageNumberOutOfRange) {
             isPageNumberOutOfRange = true;
-            return <Pagination.Ellipsis key={pageNumber} className="muted" />;
+            return <Pagination.Ellipsis key={pageNumber} onClick={handleClick} className="muted" />;
         }
 
         return null;
@@ -142,21 +159,46 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
 
     //eslint-disable-next-line 
     useEffect(setLastPageAsCurrent, [pagesCount]);
-
     return (
         <>
             {isPaginationShown && (
-                <Pagination>
-                    <Pagination.Prev
-                        onClick={onPreviousPageClick}
-                        disabled={isCurrentPageFirst}
-                    />
-                    {pageNumbers}
-                    <Pagination.Next
-                        onClick={onNextPageClick}
-                        disabled={isCurrentPageLast}
-                    />
-                </Pagination>
+                <div style={{ padding: "20px" }}>
+                    <Pagination >
+                        <Pagination.Prev
+                            onClick={onPreviousPageClick}
+                            disabled={isCurrentPageFirst}
+                        />
+                        {pageNumbers}
+                        <Pagination.Next
+                            onClick={onNextPageClick}
+                            disabled={isCurrentPageLast}
+                        />
+                    </Pagination>
+                    <div ref={ref}>
+                        <Overlay
+                            show={show}
+                            target={target}
+                            placement="top"
+                            container={ref}
+                            containerPadding={20}
+                        >
+                            <Popover id="popover-contained">
+                                <Popover.Header as="h3">Go to</Popover.Header>
+                                <Popover.Body>
+                                    <InputGroup className="mb-3">
+                                        <FormControl
+                                            type={"number"}
+                                            onChange={handleInputChange}
+                                        />
+                                        <Button variant="outline-secondary" onClick={() => onPageNumberClick(pageInput)}>
+                                            Button
+                                        </Button>
+                                    </InputGroup>
+                                </Popover.Body>
+                            </Popover>
+                        </Overlay>
+                    </div>
+                </div>
             )}
         </>
     );
