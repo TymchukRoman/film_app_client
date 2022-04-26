@@ -1,6 +1,7 @@
 import { useFormik } from "formik";
 import React from "react";
 import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge } from "react-bootstrap";
+import Checkbox from "react-custom-checkbox";
 import Select from 'react-select';
 import { movieGenres, movieTypes } from "../../constants/categories";
 
@@ -18,6 +19,7 @@ const SearchParams = (props) => {
             types: props.initialParams?.types?.length
                 ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
                 : [],
+            withPoster: props.initialParams?.withPoster || false,
         },
         onSubmit: (values) => {
             props.setParams({
@@ -28,7 +30,8 @@ const SearchParams = (props) => {
                 text: values.text,
                 imdb: values.imdb,
                 genres: values.genres.map((item) => item.value),
-                types: values.types.map((item) => item.value)
+                types: values.types.map((item) => item.value),
+                withPoster: values.withPoster,
             });
         },
     });
@@ -44,11 +47,11 @@ const SearchParams = (props) => {
     }
 
     const handleGenresChange = (selected) => {
-        formik.setFieldValue("genres", selected)
+        formik.setFieldValue("genres", selected);
     }
 
     const handleTypesChange = (selected) => {
-        formik.setFieldValue("types", selected)
+        formik.setFieldValue("types", selected);
     }
 
     return <div style={{ padding: "20px" }}>
@@ -148,12 +151,20 @@ const SearchParams = (props) => {
                                     </Form.Group>
                                 </Col>
                                 <Col>
-
                                 </Col>
                             </Row>
                             <Row style={{ marginTop: "20px" }}>
                                 <Col>
-
+                                    <Checkbox
+                                        name="withPoster"
+                                        checked={formik.values.withPoster}
+                                        onChange={(value) => {
+                                            formik.setFieldValue("withPoster", value)
+                                        }}
+                                        style={{ cursor: "pointer" }}
+                                        labelStyle={{ marginLeft: 5, userSelect: "none" }}
+                                        label="With poster only"
+                                    />
                                 </Col>
                                 <Col>
                                 </Col>
