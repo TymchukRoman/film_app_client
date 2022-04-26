@@ -204,8 +204,6 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
     );
 };
 
-
-
 const mapStateToProps = (state, ownProps) => ({
     ...state
 })
