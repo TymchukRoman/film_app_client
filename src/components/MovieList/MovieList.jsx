@@ -49,7 +49,7 @@ const MovieList = (props) => {
             initialParams={props.search?.params ? props.search?.params : null}
             isUsed={props.search?.isUsed}
             setParams={props.setParams} />
-        <Container style={{ padding: "20px" }}>
+        <Container>
             <h3 >Found {moviesNumber} movies</h3>
             {movies
                 ? <>
