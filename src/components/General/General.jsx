@@ -86,6 +86,7 @@ const CarouselComponent = (props) => {
         draggable={true}
         infinite={true}
         keyBoardControl={true}
+        slidesToSlide={3}
     >
         {props.movies.length
             ? props.movies.map((movie) => {
@@ -132,6 +133,7 @@ const CategoriesCarousel = (props) => {
         draggable={true}
         infinite={true}
         keyBoardControl={true}
+        slidesToSlide={3}
     >
         {Object.keys(props.movies).length
             ? movieGenres.map((genre) => {

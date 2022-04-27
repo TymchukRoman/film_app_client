@@ -12,8 +12,8 @@ export const registerUser = async (data) => {
     return client.post('/user/register', { ...data })
 }
 
-export const getFavorites = async (token) => {
-    return client.post('/user/favorites', { token })
+export const getFavorites = async (token, amount) => {
+    return client.post('/user/favorites', { token, amount })
 }
 
 export const editFavorite = async (token, type, movieId) => {

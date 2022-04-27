@@ -17,8 +17,6 @@ const Singup = ({ switchMode, setLoginedUser }) => {
                 if (response.data?.token && response.data?.user) {
                     localStorage.setItem('auth_token', response.data.token)
                     setLoginedUser(response.data.user);
-                } else {
-                    console.log(response.data);
                 }
             });
         },
