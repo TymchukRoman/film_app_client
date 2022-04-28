@@ -11,6 +11,7 @@ const SearchParams = (props) => {
         initialValues: {
             yearFrom: props.initialParams?.year?.from || 1900,
             yearTo: props.initialParams?.year?.to || 2017,
+            textInPlot: props.initialParams?.textInPlot || false,
             text: props.initialParams?.text || "",
             imdb: props.initialParams?.imdb || 1,
             genres: props.initialParams?.genres?.length
@@ -32,6 +33,7 @@ const SearchParams = (props) => {
                 genres: values.genres.map((item) => item.value),
                 types: values.types.map((item) => item.value),
                 withPoster: values.withPoster,
+                textInPlot: values.textInPlot
             });
         },
     });
@@ -72,6 +74,19 @@ const SearchParams = (props) => {
                                             name="text"
                                             onChange={formik.handleChange}
                                             value={formik.values.text} />
+                                        <Checkbox
+                                            name="textInPlot"
+                                            checked={formik.values.textInPlot}
+                                            onChange={(value) => {
+                                                formik.setFieldValue("textInPlot", value)
+                                            }}
+                                            borderColor="#000000"
+                                            style={{ cursor: "pointer" }}
+                                            labelStyle={{ marginLeft: 5, userSelect: "none" }}
+                                            label="Search in plot"
+                                        />
+
+
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -161,6 +176,7 @@ const SearchParams = (props) => {
                                         onChange={(value) => {
                                             formik.setFieldValue("withPoster", value)
                                         }}
+                                        borderColor="#000000"
                                         style={{ cursor: "pointer" }}
                                         labelStyle={{ marginLeft: 5, userSelect: "none" }}
                                         label="With poster only"
