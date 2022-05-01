@@ -5,6 +5,7 @@ import ImageComponent from "../helpers/imageComponent";
 import { Link, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import Preloader from "../helpers/Preloader";
+import EmptyState from "../helpers/EmptyState";
 
 const Favorites = (props) => {
 
@@ -40,7 +41,7 @@ const Favorites = (props) => {
                             })}
                         </Row>
                     </>
-                    : <p>You don`t have any favorite movies</p>
+                    : <EmptyState message={"You don`t add movies to favorite yet"} />
                 }
             </>
             : <Preloader />

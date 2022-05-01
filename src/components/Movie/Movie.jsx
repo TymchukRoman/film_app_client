@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
 import ImageComponent from "../helpers/imageComponent";
 import Preloader from "../helpers/Preloader";
+import EmptyState from "../helpers/EmptyState";
 
 const Movie = (props) => {
 
@@ -234,7 +235,7 @@ const Movie = (props) => {
                                         </Card>
                                     })}
                                 </div>
-                                : <p>No comments right now...</p>
+                                : <EmptyState message={"No comments on this movie yet"} />
                             }
                         </Row>
                     </Col>

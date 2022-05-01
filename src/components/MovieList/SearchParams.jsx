@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import React from "react";
-import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge } from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge, useAccordionButton } from "react-bootstrap";
 import Checkbox from "react-custom-checkbox";
 import Select from 'react-select';
 import { movieGenres, movieTypes } from "../../constants/categories";
@@ -54,6 +54,16 @@ const SearchParams = (props) => {
 
     const handleTypesChange = (selected) => {
         formik.setFieldValue("types", selected);
+    }
+
+    const CloseButton = ({ children, variant, type, func }) => {
+        const decoratedOnClick = useAccordionButton(0, func);
+
+        return (
+            <Button variant={variant} type={type} onClick={decoratedOnClick}>
+                {children}
+            </Button>
+        );
     }
 
     return <div style={{ padding: "20px" }}>
@@ -186,12 +196,12 @@ const SearchParams = (props) => {
                                 </Col>
                                 <Col>
                                     <ButtonGroup >
-                                        <Button variant="outline-warning" onClick={clearParams}>
+                                        <CloseButton variant="outline-warning" func={clearParams} type="button" >
                                             Clear search
-                                        </Button>
-                                        <Button variant="outline-success" type="submit">
+                                        </CloseButton>
+                                        <CloseButton variant="outline-success" type="submit" >
                                             Submit
-                                        </Button>
+                                        </CloseButton>
                                     </ButtonGroup>
                                 </Col>
                             </Row>

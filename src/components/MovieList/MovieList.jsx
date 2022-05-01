@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { setParams, setPage, setLimit, setSort } from "../../store/reducers/search.reducer";
 import ImageComponent from "../helpers/imageComponent";
 import Preloader from "../helpers/Preloader";
+import EmptyState from "../helpers/EmptyState";
 
 const MovieList = (props) => {
 
@@ -50,25 +51,33 @@ const MovieList = (props) => {
             isUsed={props.search?.isUsed}
             setParams={props.setParams} />
         <Container>
-            <h3 >Found {moviesNumber} movies</h3>
+            {movies && movies.length ?
+                <h4>Found {moviesNumber} movies</h4>
+                : <></>
+            }
             {movies
                 ? <>
-                    <Row xs={1} md={5} >
-                        {movies.map((movie) => {
-                            return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
-                                <Card className={'text-center'}>
-                                    <ImageComponent image={movie.poster} />
-                                    <Card.Body >
-                                        <p title={`${movie.title} (${movie.year})`}>
-                                            {movie.title.length > 20 ? `${movie.title.slice(0, 20)}... ` : `${movie.title} `}
-                                        </p>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        })}
-                    </Row>
+                    {movies.length ? <>
+                        <Row xs={1} md={5} >
+                            {movies.map((movie) => {
+                                return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
+                                    <Card className={'text-center'}>
+                                        <ImageComponent image={movie.poster} />
+                                        <Card.Body >
+                                            <p title={`${movie.title} (${movie.year})`}>
+                                                {movie.title.length > 20 ? `${movie.title.slice(0, 20)}... ` : `${movie.title} `}
+                                            </p>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            })}
+                        </Row>
+                    </>
+                        : <EmptyState message={"Movies not found, try to modify search params"} />
+                    }
                 </>
-                : <Preloader />}
+                : <Preloader />
+            }
         </Container>
 
         {total && <PaginationComponent
