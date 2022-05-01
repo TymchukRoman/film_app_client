@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Row, Col, Card, ButtonGroup, ButtonToolbar, InputGroup } from "react-bootstrap";
+import { Button, Row, Col, Card, ButtonGroup, ButtonToolbar, InputGroup, Container } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { logoutUser } from "../../store/reducers/user.reducer";
@@ -8,29 +8,24 @@ import { Link } from "react-router-dom";
 import { getManyMovies } from "../../api/movieAPI";
 import { getFavorites } from "../../api/userAPI";
 import Preloader from "../helpers/Preloader";
+import EmptyState from "../helpers/EmptyState";
 
 const Profile = (props) => {
 
-    const [isLastLoading, setIsLastLoading] = useState(true);
-    const [isFavLoading, setIsFavLoading] = useState(true);
-
-    const [lastViews, setLastViews] = useState([]);
-    const [favorites, setFavorites] = useState([]);
-
+    const [lastViews, setLastViews] = useState(null);
+    const [favorites, setFavorites] = useState(null);
 
     useEffect(() => {
         let lasts = JSON.parse(localStorage.getItem('lastViews'));
         getManyMovies(lasts).then((response) => {
-            if (response.data?.movies?.length) {
+            if (response.data?.movies) {
                 setLastViews(response.data.movies);
-                setIsLastLoading(false);
             }
         });
         const token = localStorage.getItem('auth_token');
         getFavorites(token, 5).then((response) => {
-            if (response.data?.movies?.length) {
+            if (response.data?.movies) {
                 setFavorites(response.data.movies);
-                setIsFavLoading(false);
             }
         });
 
@@ -57,12 +52,11 @@ const Profile = (props) => {
                 <Button variant="outline-danger" size="sm" onClick={logout}>Logout</Button>
             </ButtonGroup >
         </ButtonToolbar>
-        <Row> <h1> Last visited </h1> </Row>
-        <Row md={5}>
-            {isLastLoading
-                ? <Preloader />
-                : <> {lastViews?.length
-                    ? <>
+        <Container style={{ width: "100%" }}>
+            <Row> <h1> Last visited </h1> </Row>
+            {lastViews
+                ? <> {lastViews.length
+                    ? <Row md={5}>
                         {lastViews.map(movie => {
                             return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
                                 <Card className={'text-center'}>
@@ -75,28 +69,24 @@ const Profile = (props) => {
                                 </Card>
                             </Col>
                         })}
-                    </>
-                    : <>
-                        No movies
-                    </>
+                    </Row>
+                    : <EmptyState message={"You don`t visit any movie"} />
                 }
                 </>
+                : <Preloader />
             }
-        </Row>
-        <Row style={{ marginTop: "20px" }}>
-            <Col className="col-10">
-                <h1> Favorites </h1>
-            </Col>
-            <Col className="text-center">
-                <Button variant="outline-dark" as={Link} to='/favorites' style={{ marginTop: "10px" }}>More...</Button>
-            </Col>
-        </Row>
-        <Row md={5}>
-            {isFavLoading
-                ? <Preloader />
-                : <>
-                    {favorites?.length
-                        ? <>
+            <Row style={{ marginTop: "20px" }}>
+                <Col className="col-10">
+                    <h1> Favorites </h1>
+                </Col>
+                <Col className="text-center">
+                    <Button variant="outline-dark" as={Link} to='/favorites' style={{ marginTop: "10px" }}>More...</Button>
+                </Col>
+            </Row>
+            {favorites
+                ? <>
+                    {favorites.length
+                        ? <Row md={5}>
                             {favorites.map(movie => {
                                 return <Col key={movie._id} as={Link} to={`/movie/${movie._id}`} style={{ textDecoration: 'none', color: 'black', marginTop: "20px" }}>
                                     <Card className={'text-center'}>
@@ -109,14 +99,14 @@ const Profile = (props) => {
                                     </Card>
                                 </Col>
                             })}
-                        </>
-                        : <>
-                            No movies
-                        </>
+                        </Row>
+                        : <EmptyState message={"You don`t add movies to favorite yet"} />
                     }
                 </>
+                : <Preloader />
             }
-        </Row>
+
+        </Container >
     </div >
 }
 
