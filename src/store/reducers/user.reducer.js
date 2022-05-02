@@ -28,6 +28,7 @@ export const userActions = {
 }
 
 export const setLoginedUser = (user) => (dispatch) => {
+    localStorage.setItem('currentUser', user._id);
     dispatch(userActions.login(user));
 }
 

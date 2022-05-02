@@ -16,24 +16,24 @@ const Profile = (props) => {
     const [favorites, setFavorites] = useState(null);
 
     useEffect(() => {
-        let lasts = JSON.parse(localStorage.getItem('lastViews'));
+
+        const userId = localStorage.getItem('currentUser');
+        let lasts = JSON.parse(localStorage.getItem(`${userId}lastViews`));
         getManyMovies(lasts).then((response) => {
             if (response.data?.movies) {
                 setLastViews(response.data.movies);
+            } else {
+                setLastViews([]);
             }
         });
         const token = localStorage.getItem('auth_token');
         getFavorites(token, 5).then((response) => {
             if (response.data?.movies) {
                 setFavorites(response.data.movies);
+            } else {
+                setFavorites([]);
             }
         });
-
-        // getManyMovies(props.profile.user.favorites).then((response) => {
-        //     if (response.data?.movies?.length) {
-        //         setFavorites(response.data.movies);
-        //     }
-        // })
     }, [])
 
     const logout = () => {

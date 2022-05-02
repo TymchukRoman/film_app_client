@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import { getMovie } from "../../api/movieAPI";
 import { Container, Row, Col, Card, Badge, Form, Button } from "react-bootstrap";
 import { getComments, newComment } from "../../api/commentsAPI";
@@ -9,6 +9,7 @@ import { editFavorite } from "../../api/userAPI";
 import ImageComponent from "../helpers/imageComponent";
 import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
+import { setParams } from "../../store/reducers/search.reducer";
 
 const Movie = (props) => {
 
@@ -19,12 +20,17 @@ const Movie = (props) => {
     const [comments, setComments] = useState([]);
     const [isFavorite, setIsFavorite] = useState(true);
     const [isCommentLoading, setIsCommentLoading] = useState(false);
+    const [navigateTo, setNavigateTo] = useState(null);
 
+    const navigateWithParams = (params) => {
+        props.setParams(params);
+        setNavigateTo(<Navigate to={"/movies"} />)
+    }
 
     useEffect(() => {
         setIsFavorite(props.profile?.user?.favorites?.includes(movieId));
-
-        let lastViews = localStorage.getItem('lastViews');
+        const userId = localStorage.getItem('currentUser');
+        let lastViews = localStorage.getItem(`${userId}lastViews`);
         if (!lastViews) {
             lastViews = [movieId];
         } else {
@@ -40,7 +46,7 @@ const Movie = (props) => {
                 lastViews = [movieId];
             }
         }
-        localStorage.setItem('lastViews', JSON.stringify(lastViews));
+        localStorage.setItem(`${userId}lastViews`, JSON.stringify(lastViews));
 
         //eslint-disable-next-line
     }, [])
@@ -100,6 +106,7 @@ const Movie = (props) => {
     });
 
     return <div style={{ marginTop: '20px' }}   >
+        {navigateTo ? navigateTo : <></>}
         {movie
             ? <Container>
                 <Row>
@@ -159,27 +166,69 @@ const Movie = (props) => {
                             </Row>
                             {movie.cast?.length > 0 &&
                                 <Row>
-                                    <p>Cast: {movie.cast.map((actor, index) => <Badge key={`${actor}${index}`} bg="dark" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                    <p>
+                                        Cast: {movie.cast.map((actor, index) =>
+                                            <Badge
+                                                key={`${actor}${index}`}
+                                                bg="dark"
+                                                style={{ marginLeft: "20px" }}>
+                                                {actor}
+                                            </Badge>)}
+                                    </p>
                                 </Row>
                             }
                             {movie.genres?.length > 0 &&
                                 <Row>
-                                    <p>Genres: {movie.genres.map((actor, index) => <Badge key={`${actor}${index}`} bg="success" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                    <p>
+                                        Genres: {movie.genres.map((genre, index) =>
+                                            <Badge
+                                                onClick={() => { navigateWithParams({ genres: [genre] }) }}
+                                                key={`${genre}${index}`}
+                                                bg="success"
+                                                style={{ marginLeft: "20px" }}>
+                                                {genre}
+                                            </Badge>)}
+                                    </p>
                                 </Row>
                             }
                             {movie.countries?.length > 0 &&
                                 <Row>
-                                    <p>Countries: {movie.countries.map((actor, index) => <Badge key={`${actor}${index}`} bg="info" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                    <p>
+                                        Countries: {movie.countries.map((countrie, index) =>
+                                            <Badge
+                                                key={`${countrie}${index}`}
+                                                bg="info"
+                                                style={{ marginLeft: "20px" }}>
+                                                {countrie}
+                                            </Badge>)}
+                                    </p>
                                 </Row>
                             }
                             {movie.directors?.length > 0 &&
                                 <Row>
-                                    <p>Directors: {movie.directors.map((actor, index) => <Badge key={`${actor}${index}`} bg="danger" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                    <p>
+                                        Directors: {movie.directors.map((director, index) =>
+                                            <Badge
+                                                key={`${director}${index}`}
+                                                bg="danger"
+                                                style={{ marginLeft: "20px" }}>
+                                                {director}
+                                            </Badge>)}
+                                    </p>
                                 </Row>
                             }
                             {movie.writers?.length > 0 &&
                                 <Row>
-                                    <p>Writers: {movie.writers.map((actor, index) => <Badge key={`${actor}${index}`} pill bg="danger" style={{ marginLeft: "20px" }}>{actor} </Badge>)}</p>
+                                    <p>
+                                        Writers: {movie.writers.map((writer, index) =>
+                                            <Badge
+                                                key={`${writer}${index}`}
+                                                pill
+                                                bg="danger"
+                                                style={{ marginLeft: "20px" }}>
+                                                {writer}
+                                            </Badge>)}
+                                    </p>
                                 </Row>
                             }
                             <Row>
@@ -251,4 +300,4 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 
-export default connect(mapStateToProps, {})(Movie)
+export default connect(mapStateToProps, { setParams })(Movie)
