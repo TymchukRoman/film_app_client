@@ -9,8 +9,8 @@ const SearchParams = (props) => {
 
     const formik = useFormik({
         initialValues: {
-            yearFrom: props.initialParams?.year?.from || 1900,
-            yearTo: props.initialParams?.year?.to || 2017,
+            yearFrom: props.initialParams?.year?.from || 1891,
+            yearTo: props.initialParams?.year?.to || 2016,
             textInPlot: props.initialParams?.textInPlot || false,
             text: props.initialParams?.text || "",
             imdb: props.initialParams?.imdb || 1,
@@ -106,6 +106,8 @@ const SearchParams = (props) => {
                                             <Row>
                                                 <Col>
                                                     <Form.Control
+                                                        min={1891}
+                                                        max={2016}
                                                         type="number"
                                                         name="yearFrom"
                                                         onChange={formik.handleChange}
@@ -113,6 +115,8 @@ const SearchParams = (props) => {
                                                 </Col>
                                                 <Col>
                                                     <Form.Control
+                                                        min={1891}
+                                                        max={2016}
                                                         type="number"
                                                         name="yearTo"
                                                         onChange={formik.handleChange}

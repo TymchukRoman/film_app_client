@@ -122,6 +122,7 @@ const Movie = (props) => {
                                     <h4>
                                         {movie.title}
                                         <Badge
+                                            onClick={() => { navigateWithParams({ year: { from: movie.year, to: movie.year } }) }}
                                             bg="light"
                                             text="dark"
                                             pill
@@ -282,6 +283,7 @@ const Movie = (props) => {
                                                 {comment.text}
                                             </Card.Body>
                                         </Card>
+
                                     })}
                                 </div>
                                 : <EmptyState message={"No comments on this movie yet"} />
