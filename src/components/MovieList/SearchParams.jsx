@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge, useAccordionButton } from "react-bootstrap";
 import Checkbox from "react-custom-checkbox";
 import Select from 'react-select';
-import { movieGenres, movieTypes } from "../../constants/categories";
+import AsyncSelect from 'react-select/async';
+import { getCats } from "../../api/catsAPI";
+import { movieTypes } from "../../constants/categories";
 
 const SearchParams = (props) => {
 
@@ -21,8 +23,10 @@ const SearchParams = (props) => {
                 ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
                 : [],
             withPoster: props.initialParams?.withPoster || false,
+            actors: []
         },
         onSubmit: (values) => {
+            console.log(values)
             props.setParams({
                 year: {
                     from: values.yearFrom,
@@ -33,7 +37,8 @@ const SearchParams = (props) => {
                 genres: values.genres.map((item) => item.value),
                 types: values.types.map((item) => item.value),
                 withPoster: values.withPoster,
-                textInPlot: values.textInPlot
+                textInPlot: values.textInPlot,
+                actors: values.actors
             });
         },
     });
@@ -67,7 +72,7 @@ const SearchParams = (props) => {
     }
 
     return <div style={{ padding: "20px" }}>
-        <Accordion>
+        <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
                 <Accordion.Header>
                     Search params {props.isUsed ? <Badge bg="info" style={{ marginLeft: "10px" }}>Active</Badge> : " "}
@@ -153,7 +158,14 @@ const SearchParams = (props) => {
                             <Row style={{ marginTop: "20px" }}>
                                 <Col>
                                     <Form.Group >
-                                        <Select
+
+                                        <AsyncMultiSelect
+                                            handler={handleGenresChange}
+                                            value={formik.values.genres}
+                                            isMulti
+                                            cat={"genres"}
+                                        />
+                                        {/* <Select
                                             onChange={handleGenresChange}
                                             defaultValue={formik.values.genres}
                                             isMulti
@@ -161,7 +173,7 @@ const SearchParams = (props) => {
                                             options={movieGenres.map((item) => ({ value: item, label: item }))}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
-                                        />
+                                        /> */}
 
                                     </Form.Group>
                                 </Col>
@@ -209,6 +221,33 @@ const SearchParams = (props) => {
                                     </ButtonGroup>
                                 </Col>
                             </Row>
+                            <Row>
+                                <Col>
+                                    {/* <AsyncMultiSelect
+                                        onChange={handleTypesChange}
+                                        value={formik.values.actors}
+                                        cat={'actors'} /> */}
+                                    actors
+                                </Col>
+                                <Col>
+                                    countrie
+                                </Col>
+                                <Col>
+                                    lang
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col>
+                                    actowritter
+                                </Col>
+                                <Col>
+                                    directors
+                                </Col>
+                                <Col>
+                                    rated
+                                </Col>
+                            </Row>
                         </Container>
                     </Form>
                 </Accordion.Body>
@@ -216,6 +255,49 @@ const SearchParams = (props) => {
         </Accordion>
 
     </div >
+}
+
+const AsyncMultiSelect = ({ handler, value, cat }) => {
+
+    const [inputValue, setInputValue] = useState('');
+    const [debounceTimeout, setDebounceTimeout] = useState(null);
+
+    const debounce = (cb, delay = 1000) => {
+        return (...args) => {
+            clearTimeout(debounceTimeout)
+            setDebounceTimeout(setTimeout(() => {
+                cb(...args)
+            }, delay))
+        }
+    }
+
+    const loadOptions = (search = inputValue, callback) => {
+        getCats(cat, search).then(res => {
+            if (res.data[cat].length) {
+                return callback(res.data[cat].map(item => ({ value: item.name, label: item.name })));
+            } else {
+                return callback([]);
+            }
+        })
+    };
+
+    const handleInputChange = (newValue) => {
+        setInputValue(newValue);
+        return newValue;
+    };
+
+    return <AsyncSelect
+        cacheOptions
+        loadOptions={debounce(loadOptions)}
+        onInputChange={handleInputChange}
+        defaultOptions
+        onChange={handler}
+        defaultValue={value}
+        isMulti
+        name={cat}
+        className="basic-multi-select"
+        classNamePrefix="select"
+    />
 }
 
 export default SearchParams;
