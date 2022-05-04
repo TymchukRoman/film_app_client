@@ -23,10 +23,26 @@ const SearchParams = (props) => {
                 ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
                 : [],
             withPoster: props.initialParams?.withPoster || false,
-            actors: []
+            actors: props.initialParams?.actors?.length ?
+                [...props.initialParams.actors.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            countries: props.initialParams?.countries?.length ?
+                [...props.initialParams.countries.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            languages: props.initialParams?.languages?.length ?
+                [...props.initialParams.languages.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            writers: props.initialParams?.writers?.length ?
+                [...props.initialParams.writers.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            directors: props.initialParams?.directors?.length ?
+                [...props.initialParams.directors.map((item) => ({ "value": item, "label": item }))]
+                : [],
+            rates: props.initialParams?.rates?.length ?
+                [...props.initialParams.rates.map((item) => ({ "value": item, "label": item }))]
+                : [],
         },
         onSubmit: (values) => {
-            console.log(values)
             props.setParams({
                 year: {
                     from: values.yearFrom,
@@ -38,7 +54,12 @@ const SearchParams = (props) => {
                 types: values.types.map((item) => item.value),
                 withPoster: values.withPoster,
                 textInPlot: values.textInPlot,
-                actors: values.actors
+                actors: values.actors.map((item) => item.value),
+                countries: values.countries.map((item) => item.value),
+                languages: values.languages.map((item) => item.value),
+                writers: values.writers.map((item) => item.value),
+                directors: values.directors.map((item) => item.value),
+                rates: values.rates.map((item) => item.value),
             });
         },
     });
@@ -47,10 +68,22 @@ const SearchParams = (props) => {
         formik.setFieldValue('yearFrom', 1800);
         formik.setFieldValue('yearTo', 2017);
         formik.setFieldValue('text', '');
+        formik.setFieldValue('textInPlot', false);
         formik.setFieldValue('imdb', 1);
         formik.setFieldValue('genres', []);
-        formik.setFieldValue('types', [{ "value": "movie", "label": "movie" }]);
+        formik.setFieldValue('types', []);
+        formik.setFieldValue('withPoster', false);
+        formik.setFieldValue('actors', []);
+        formik.setFieldValue('countries', []);
+        formik.setFieldValue('languages', []);
+        formik.setFieldValue('writers', []);
+        formik.setFieldValue('directors', []);
+        formik.setFieldValue('rates', []);
         props.setParams(null)
+    }
+
+    const handleSelectChanges = (field) => (selected) => {
+        formik.setFieldValue(field, selected);
     }
 
     const handleGenresChange = (selected) => {
@@ -158,23 +191,11 @@ const SearchParams = (props) => {
                             <Row style={{ marginTop: "20px" }}>
                                 <Col>
                                     <Form.Group >
-
                                         <AsyncMultiSelect
                                             handler={handleGenresChange}
                                             value={formik.values.genres}
-                                            isMulti
                                             cat={"genres"}
                                         />
-                                        {/* <Select
-                                            onChange={handleGenresChange}
-                                            defaultValue={formik.values.genres}
-                                            isMulti
-                                            name="genres"
-                                            options={movieGenres.map((item) => ({ value: item, label: item }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
-                                        /> */}
-
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -188,7 +209,6 @@ const SearchParams = (props) => {
                                             className="basic-multi-select"
                                             classNamePrefix="select"
                                         />
-
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -223,29 +243,49 @@ const SearchParams = (props) => {
                             </Row>
                             <Row>
                                 <Col>
-                                    {/* <AsyncMultiSelect
-                                        onChange={handleTypesChange}
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("actors")}
                                         value={formik.values.actors}
-                                        cat={'actors'} /> */}
-                                    actors
+                                        cat={"actors"}
+                                    />
                                 </Col>
                                 <Col>
-                                    countrie
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("countries")}
+                                        value={formik.values.countries}
+                                        cat={"countries"}
+                                    />
                                 </Col>
                                 <Col>
-                                    lang
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("languages")}
+                                        value={formik.values.languages}
+                                        cat={"languages"}
+                                    />
                                 </Col>
                             </Row>
 
                             <Row>
                                 <Col>
-                                    actowritter
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("writers")}
+                                        value={formik.values.writers}
+                                        cat={"writers"}
+                                    />
                                 </Col>
                                 <Col>
-                                    directors
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("directors")}
+                                        value={formik.values.directors}
+                                        cat={"directors"}
+                                    />
                                 </Col>
                                 <Col>
-                                    rated
+                                    <AsyncMultiSelect
+                                        handler={handleSelectChanges("rates")}
+                                        value={formik.values.rates}
+                                        cat={"rates"}
+                                    />
                                 </Col>
                             </Row>
                         </Container>
@@ -293,6 +333,7 @@ const AsyncMultiSelect = ({ handler, value, cat }) => {
         defaultOptions
         onChange={handler}
         defaultValue={value}
+        value={value}
         isMulti
         name={cat}
         className="basic-multi-select"
