@@ -1,8 +1,6 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge, useAccordionButton } from "react-bootstrap";
-import Checkbox from "react-custom-checkbox";
-import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { getCats } from "../../api/catsAPI";
 import { movieTypes } from "../../constants/categories";
@@ -15,32 +13,24 @@ const SearchParams = (props) => {
             yearTo: props.initialParams?.year?.to || 2016,
             textInPlot: props.initialParams?.textInPlot || false,
             text: props.initialParams?.text || "",
-            imdb: props.initialParams?.imdb || 1,
+            imdb: props.initialParams?.imdb || 0,
             genres: props.initialParams?.genres?.length
-                ? [...props.initialParams.genres.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                ? [...props.initialParams.genres.map((item) => ({ "value": item, "label": item }))] : [],
             types: props.initialParams?.types?.length
-                ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))] : [],
             withPoster: props.initialParams?.withPoster || false,
             actors: props.initialParams?.actors?.length ?
-                [...props.initialParams.actors.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.actors.map((item) => ({ "value": item, "label": item }))] : [],
             countries: props.initialParams?.countries?.length ?
-                [...props.initialParams.countries.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.countries.map((item) => ({ "value": item, "label": item }))] : [],
             languages: props.initialParams?.languages?.length ?
-                [...props.initialParams.languages.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.languages.map((item) => ({ "value": item, "label": item }))] : [],
             writers: props.initialParams?.writers?.length ?
-                [...props.initialParams.writers.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.writers.map((item) => ({ "value": item, "label": item }))] : [],
             directors: props.initialParams?.directors?.length ?
-                [...props.initialParams.directors.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.directors.map((item) => ({ "value": item, "label": item }))] : [],
             rates: props.initialParams?.rates?.length ?
-                [...props.initialParams.rates.map((item) => ({ "value": item, "label": item }))]
-                : [],
+                [...props.initialParams.rates.map((item) => ({ "value": item, "label": item }))] : [],
         },
         onSubmit: (values) => {
             props.setParams({
@@ -65,33 +55,12 @@ const SearchParams = (props) => {
     });
 
     const clearParams = () => {
-        formik.setFieldValue('yearFrom', 1800);
-        formik.setFieldValue('yearTo', 2017);
-        formik.setFieldValue('text', '');
-        formik.setFieldValue('textInPlot', false);
-        formik.setFieldValue('imdb', 1);
-        formik.setFieldValue('genres', []);
-        formik.setFieldValue('types', []);
-        formik.setFieldValue('withPoster', false);
-        formik.setFieldValue('actors', []);
-        formik.setFieldValue('countries', []);
-        formik.setFieldValue('languages', []);
-        formik.setFieldValue('writers', []);
-        formik.setFieldValue('directors', []);
-        formik.setFieldValue('rates', []);
-        props.setParams(null)
+        formik.resetForm();
+        props.setParams(null);
     }
 
     const handleSelectChanges = (field) => (selected) => {
         formik.setFieldValue(field, selected);
-    }
-
-    const handleGenresChange = (selected) => {
-        formik.setFieldValue("genres", selected);
-    }
-
-    const handleTypesChange = (selected) => {
-        formik.setFieldValue("types", selected);
     }
 
     const CloseButton = ({ children, variant, type, func }) => {
@@ -108,7 +77,7 @@ const SearchParams = (props) => {
         <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
                 <Accordion.Header>
-                    Search params {props.isUsed ? <Badge bg="info" style={{ marginLeft: "10px" }}>Active</Badge> : " "}
+                    Search params {props.isUsed ? <ParamsBadges values={formik.values} /> : " "}
                 </Accordion.Header>
                 <Accordion.Body style={{ padding: "20px" }}>
                     <Form onSubmit={formik.handleSubmit}>
@@ -122,19 +91,22 @@ const SearchParams = (props) => {
                                             name="text"
                                             onChange={formik.handleChange}
                                             value={formik.values.text} />
-                                        <Checkbox
-                                            name="textInPlot"
-                                            checked={formik.values.textInPlot}
-                                            onChange={(value) => {
-                                                formik.setFieldValue("textInPlot", value)
-                                            }}
-                                            borderColor="#000000"
-                                            style={{ cursor: "pointer" }}
-                                            labelStyle={{ marginLeft: 5, userSelect: "none" }}
-                                            label="Search in plot"
-                                        />
-
-
+                                        <Row>
+                                            <Col><Form.Check
+                                                name="textInPlot"
+                                                checked={formik.values.textInPlot}
+                                                onChange={formik.handleChange}
+                                                type="checkbox"
+                                                label="Search in plot"
+                                            /></Col>
+                                            <Col><Form.Check
+                                                name="withPoster"
+                                                checked={formik.values.withPoster}
+                                                onChange={formik.handleChange}
+                                                type="checkbox"
+                                                label="With poster only"
+                                            /></Col>
+                                        </Row>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -192,7 +164,7 @@ const SearchParams = (props) => {
                                 <Col>
                                     <Form.Group >
                                         <AsyncMultiSelect
-                                            handler={handleGenresChange}
+                                            handler={handleSelectChanges('genres')}
                                             value={formik.values.genres}
                                             cat={"genres"}
                                         />
@@ -200,35 +172,12 @@ const SearchParams = (props) => {
                                 </Col>
                                 <Col>
                                     <Form.Group >
-                                        <Select
-                                            onChange={handleTypesChange}
-                                            defaultValue={formik.values.types}
-                                            isMulti
-                                            name="types"
-                                            options={movieTypes.map((item) => ({ value: item, label: item }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
+                                        <AsyncMultiSelect
+                                            handler={handleSelectChanges('types')}
+                                            value={formik.values.types}
+                                            cat={"types"}
                                         />
                                     </Form.Group>
-                                </Col>
-                                <Col>
-                                </Col>
-                            </Row>
-                            <Row style={{ marginTop: "20px" }}>
-                                <Col>
-                                    <Checkbox
-                                        name="withPoster"
-                                        checked={formik.values.withPoster}
-                                        onChange={(value) => {
-                                            formik.setFieldValue("withPoster", value)
-                                        }}
-                                        borderColor="#000000"
-                                        style={{ cursor: "pointer" }}
-                                        labelStyle={{ marginLeft: 5, userSelect: "none" }}
-                                        label="With poster only"
-                                    />
-                                </Col>
-                                <Col>
                                 </Col>
                                 <Col>
                                     <ButtonGroup >
@@ -312,6 +261,9 @@ const AsyncMultiSelect = ({ handler, value, cat }) => {
     }
 
     const loadOptions = (search = inputValue, callback) => {
+        if (cat === 'types') {
+            return callback(movieTypes.map((item) => ({ value: item, label: item })).filter((item) => item.value.includes(search)));
+        }
         getCats(cat, search).then(res => {
             if (res.data[cat].length) {
                 return callback(res.data[cat].map(item => ({ value: item.name, label: item.name })));
@@ -326,19 +278,60 @@ const AsyncMultiSelect = ({ handler, value, cat }) => {
         return newValue;
     };
 
-    return <AsyncSelect
-        cacheOptions
-        loadOptions={debounce(loadOptions)}
-        onInputChange={handleInputChange}
-        defaultOptions
-        onChange={handler}
-        defaultValue={value}
-        value={value}
-        isMulti
-        name={cat}
-        className="basic-multi-select"
-        classNamePrefix="select"
-    />
+    return <>
+        <Form.Label>{cat}</Form.Label>
+        <AsyncSelect
+            cacheOptions
+            loadOptions={debounce(loadOptions)}
+            onInputChange={handleInputChange}
+            defaultOptions
+            onChange={handler}
+            defaultValue={value}
+            value={value}
+            isMulti
+            name={cat}
+            className="basic-multi-select"
+            classNamePrefix="select"
+        />
+    </>
+}
+
+const ParamsBadges = ({ values }) => {
+
+    console.log(values)
+
+    const generateForArray = (values) => {
+        return <Badge bg="info" style={{ marginLeft: "10px" }}>{values.map(item => item.label).join(', ')}</Badge>
+    }
+
+    let a = {
+        "actors": [],
+        "countries": [],
+        "languages": [],
+        "writers": [],
+        "directors": [],
+        "rates": []
+    }
+
+
+    return <>
+        {values.text &&
+            <Badge bg="info" style={{ marginLeft: "10px" }}>{values.text} {values.textInPlot && "*"}</Badge>}
+        {(values.yearFrom !== 1891 || values.yearTo !== 2016) &&
+            <Badge bg="info" style={{ marginLeft: "10px" }}>{values.yearFrom} - {values.yearTo}</Badge>}
+        {values.imdb > 0 &&
+            <Badge bg="info" style={{ marginLeft: "10px" }}>IMDB: {values.imdb}+</Badge>}
+        {values.withPoster > 0 &&
+            <Badge bg="info" style={{ marginLeft: "10px" }}>With image</Badge>}
+        {values.genres?.length > 0 && generateForArray(values.genres)}
+        {values.types?.length > 0 && generateForArray(values.types)}
+        {values.actors?.length > 0 && generateForArray(values.actors)}
+        {values.countries?.length > 0 && generateForArray(values.countries)}
+        {values.languages?.length > 0 && generateForArray(values.languages)}
+        {values.writers?.length > 0 && generateForArray(values.writers)}
+        {values.directors?.length > 0 && generateForArray(values.directors)}
+        {values.rates?.length > 0 && generateForArray(values.rates)}
+    </>
 }
 
 export default SearchParams;
