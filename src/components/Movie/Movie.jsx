@@ -197,6 +197,7 @@ const Movie = (props) => {
                                     <p>
                                         Countries: {movie.countries.map((countrie, index) =>
                                             <Badge
+                                                onClick={() => { navigateWithParams({ countries: [countrie] }) }}
                                                 key={`${countrie}${index}`}
                                                 bg="info"
                                                 style={{ marginLeft: "20px" }}>
@@ -210,6 +211,7 @@ const Movie = (props) => {
                                     <p>
                                         Directors: {movie.directors.map((director, index) =>
                                             <Badge
+                                                onClick={() => { navigateWithParams({ directors: [director] }) }}
                                                 key={`${director}${index}`}
                                                 bg="danger"
                                                 style={{ marginLeft: "20px" }}>
@@ -223,6 +225,7 @@ const Movie = (props) => {
                                     <p>
                                         Writers: {movie.writers.map((writer, index) =>
                                             <Badge
+                                                onClick={() => { navigateWithParams({ writers: [writer] }) }}
                                                 key={`${writer}${index}`}
                                                 pill
                                                 bg="danger"

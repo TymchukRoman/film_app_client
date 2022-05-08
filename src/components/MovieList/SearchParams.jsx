@@ -55,7 +55,24 @@ const SearchParams = (props) => {
     });
 
     const clearParams = () => {
-        formik.resetForm();
+        formik.resetForm({
+            values: {
+                yearFrom: 1891,
+                yearTo: 2016,
+                textInPlot: false,
+                text: "",
+                imdb: 0,
+                genres: [],
+                types: [],
+                withPoster: false,
+                actors: [],
+                countries: [],
+                languages: [],
+                writers: [],
+                directors: [],
+                rates: []
+            }
+        });
         props.setParams(null);
     }
 
@@ -77,7 +94,9 @@ const SearchParams = (props) => {
         <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
                 <Accordion.Header>
-                    Search params {props.isUsed ? <ParamsBadges values={formik.values} /> : " "}
+                    <div style={{ width: "100%" }}>
+                        {props.isUsed ? <ParamsBadges values={formik.values} /> : "Search params"}
+                    </div>
                 </Accordion.Header>
                 <Accordion.Body style={{ padding: "20px" }}>
                     <Form onSubmit={formik.handleSubmit}>
@@ -279,7 +298,7 @@ const AsyncMultiSelect = ({ handler, value, cat }) => {
     };
 
     return <>
-        <Form.Label>{cat}</Form.Label>
+        <Form.Label>{cat[0].toUpperCase() + cat.slice(1)}</Form.Label>
         <AsyncSelect
             cacheOptions
             loadOptions={debounce(loadOptions)}
@@ -301,22 +320,24 @@ const ParamsBadges = ({ values }) => {
     console.log(values)
 
     const generateForArray = (values) => {
-        return <Badge bg="info" style={{ marginLeft: "10px" }}>{values.map(item => item.label).join(', ')}</Badge>
+        const badgeString = values.map(item => item.label).join(', ');
+        return <Badge
+            bg="info"
+            style={{ marginLeft: "10px" }}
+            title={badgeString}>
+            {badgeString.length > 15 ? (badgeString.slice(0, 15) + "...") : badgeString}
+        </Badge>
     }
-
-    let a = {
-        "actors": [],
-        "countries": [],
-        "languages": [],
-        "writers": [],
-        "directors": [],
-        "rates": []
-    }
-
 
     return <>
         {values.text &&
-            <Badge bg="info" style={{ marginLeft: "10px" }}>{values.text} {values.textInPlot && "*"}</Badge>}
+            <Badge
+                bg="info"
+                style={{ marginLeft: "10px" }}
+                title={values.text}>
+                {values.text.length > 20 ? (values.text.slice(0, 20) + "...") : values.text}
+                {values.textInPlot && "*"}
+            </Badge>}
         {(values.yearFrom !== 1891 || values.yearTo !== 2016) &&
             <Badge bg="info" style={{ marginLeft: "10px" }}>{values.yearFrom} - {values.yearTo}</Badge>}
         {values.imdb > 0 &&
