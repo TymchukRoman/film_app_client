@@ -200,7 +200,7 @@ const PaginationComponent = ({ pagesCount, currentPage, setCurrentPage, loadMovi
                                             onChange={handleInputChange}
                                         />
                                         <Button variant="outline-secondary" onClick={() => onPageNumberClick(pageInput)}>
-                                            Button
+                                            Go
                                         </Button>
                                     </InputGroup>
                                 </Popover.Body>
