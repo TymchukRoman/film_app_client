@@ -170,6 +170,7 @@ const Movie = (props) => {
                                     <p>
                                         Cast: {movie.cast.map((actor, index) =>
                                             <Badge
+                                                onClick={() => { navigateWithParams({ actors: [actor] }) }}
                                                 key={`${actor}${index}`}
                                                 bg="dark"
                                                 style={{ marginLeft: "20px" }}>
