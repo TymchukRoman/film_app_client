@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useParams, Navigate } from "react-router-dom";
 import { getMovie } from "../../api/movieAPI";
-import { Container, Row, Col, Card, Badge, Form, Button } from "react-bootstrap";
-import { getComments, newComment } from "../../api/commentsAPI";
+import { Container, Row, Col, Card, Badge, Form, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { getComments, newComment, replyComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
 import ImageComponent from "../helpers/imageComponent";
 import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
 import { setParams } from "../../store/reducers/search.reducer";
+import repliedIcon from '../../resourses/replied.png';
 
 const Movie = (props) => {
 
@@ -269,29 +270,7 @@ const Movie = (props) => {
                             </Form>
                         </Row>
                         <Row>
-                            {comments.length
-                                ? <div>
-                                    {comments.map((comment) => {
-                                        return <Card key={comment._id} style={{ marginTop: '10px' }} className={`mb-2`} >
-                                            <Card.Header>
-                                                <Row>
-                                                    <Col>
-                                                        {comment.name}
-                                                    </Col>
-                                                    <Col className={'text-center text-muted'}>
-                                                        {comment.date}
-                                                    </Col>
-                                                </Row>
-                                            </Card.Header>
-                                            <Card.Body>
-                                                {comment.text}
-                                            </Card.Body>
-                                        </Card>
-
-                                    })}
-                                </div>
-                                : <EmptyState message={"No comments on this movie yet"} />
-                            }
+                            <CommentsSection comments={comments} />
                         </Row>
                     </Col>
                 </Row>
@@ -299,6 +278,69 @@ const Movie = (props) => {
             : <Preloader />
         }
     </div >
+}
+
+const CommentsSection = ({ comments }) => {
+
+    return <>
+        {comments.length
+            ? <div>
+                {comments.map((comment) => {
+                    return <Card key={comment._id} style={{ marginTop: '10px' }} className={`mb-2`} >
+                        <Card.Header>
+                            <Row>
+                                <Col>
+                                    {comment.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{comment.date}</span>
+                                </Col>
+                            </Row>
+                        </Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    {comment.text}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    Reply...
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                        {comment.replies?.length > 0
+                            ? <>
+                                {comment.replies.map(reply => {
+                                    return <ListGroup className="list-group-flush">
+                                        <ListGroupItem>
+                                            <Row>
+                                                <Col xs={1}>
+                                                    <img src={repliedIcon} alt="Replied icon" style={{ width: "30%" }} />
+                                                </Col>
+                                                <Col>
+                                                    <Row>
+                                                        <Col>
+                                                            {reply.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{reply.date}</span>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col>
+                                                            {reply.text}
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                        </ListGroupItem>
+                                    </ListGroup>
+                                })}
+
+                            </>
+                            : <></>}
+                    </Card>
+
+                })}
+            </div>
+            : <EmptyState message={"No comments on this movie yet"} />
+        }
+    </>
 }
 
 const mapStateToProps = (state, ownProps) => ({

@@ -10,3 +10,10 @@ export const newComment = async (movieId, text) => {
         token, movieId, text
     })
 }
+
+export const replyComment = async (commentId, text) => {
+    const token = localStorage.getItem('auth_token');
+    return client.post('/comment/reply', {
+        token, commentId, text
+    })
+}
