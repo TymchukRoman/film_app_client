@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { useParams, Navigate } from "react-router-dom";
 import { getMovie } from "../../api/movieAPI";
 import { Container, Row, Col, Card, Badge, Form, Button, ListGroup, ListGroupItem } from "react-bootstrap";
-import { getComments, newComment, replyComment } from "../../api/commentsAPI";
+import { getComments, newComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
 import ImageComponent from "../helpers/imageComponent";
