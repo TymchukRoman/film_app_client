@@ -4,86 +4,20 @@ import { Form, Button, Row, Col, Container, Accordion, ButtonGroup, Badge, useAc
 import AsyncSelect from 'react-select/async';
 import { getCats } from "../../api/catsAPI";
 import { movieTypes } from "../../constants/categories";
+import initial from "./initialValues";
 
 const SearchParams = (props) => {
 
     const formik = useFormik({
-        initialValues: {
-            yearFrom: props.initialParams?.year?.from || 1891,
-            yearTo: props.initialParams?.year?.to || 2016,
-            textInPlot: props.initialParams?.textInPlot || false,
-            text: props.initialParams?.text || "",
-            imdb: props.initialParams?.imdb || 0,
-            genres: props.initialParams?.genres?.length
-                ? [...props.initialParams.genres.map((item) => ({ "value": item, "label": item }))] : [],
-            genresLogic: props.initialParams?.genresLogic || "$in",
-            types: props.initialParams?.types?.length
-                ? [...props.initialParams.types.map((item) => ({ "value": item, "label": item }))] : [],
-            withPoster: props.initialParams?.withPoster || false,
-            actors: props.initialParams?.actors?.length ?
-                [...props.initialParams.actors.map((item) => ({ "value": item, "label": item }))] : [],
-            actorsLogic: props.initialParams?.actorsLogic || "$in",
-            countries: props.initialParams?.countries?.length ?
-                [...props.initialParams.countries.map((item) => ({ "value": item, "label": item }))] : [],
-            countriesLogic: props.initialParams?.countriesLogic || "$in",
-            languages: props.initialParams?.languages?.length ?
-                [...props.initialParams.languages.map((item) => ({ "value": item, "label": item }))] : [],
-            languagesLogic: props.initialParams?.languagesLogic || "$in",
-            writers: props.initialParams?.writers?.length ?
-                [...props.initialParams.writers.map((item) => ({ "value": item, "label": item }))] : [],
-            writersLogic: props.initialParams?.writersLogic || "$in",
-            directors: props.initialParams?.directors?.length ?
-                [...props.initialParams.directors.map((item) => ({ "value": item, "label": item }))] : [],
-            directorsLogic: props.initialParams?.directorsLogic || "$in",
-            rates: props.initialParams?.rates?.length ?
-                [...props.initialParams.rates.map((item) => ({ "value": item, "label": item }))] : [],
-        },
+        initialValues: initial.getInitial(props.initialParams),
         onSubmit: (values) => {
-            props.setParams({
-                year: {
-                    from: values.yearFrom,
-                    to: values.yearTo
-                },
-                text: values.text,
-                imdb: values.imdb,
-                genres: values.genres.map((item) => item.value),
-                types: values.types.map((item) => item.value),
-                withPoster: values.withPoster,
-                textInPlot: values.textInPlot,
-                actors: values.actors.map((item) => item.value),
-                countries: values.countries.map((item) => item.value),
-                languages: values.languages.map((item) => item.value),
-                writers: values.writers.map((item) => item.value),
-                directors: values.directors.map((item) => item.value),
-                rates: values.rates.map((item) => item.value),
-                genresLogic: values.genresLogic,
-                actorsLogic: values.actorsLogic,
-                countriesLogic: values.countriesLogic,
-                languagesLogic: values.languagesLogic,
-                writersLogic: values.writersLogic,
-                directorsLogic: values.directorsLogic,
-            });
+            props.setParams(initial.withValues(values));
         },
     });
 
     const clearParams = () => {
         formik.resetForm({
-            values: {
-                yearFrom: 1891,
-                yearTo: 2016,
-                textInPlot: false,
-                text: "",
-                imdb: 0,
-                genres: [],
-                types: [],
-                withPoster: false,
-                actors: [],
-                countries: [],
-                languages: [],
-                writers: [],
-                directors: [],
-                rates: []
-            }
+            values: initial.resetValues()
         });
         props.setParams(null);
     }
@@ -387,28 +321,33 @@ const ParamsBadges = ({ values }) => {
     }
 
     return <>
-        {values.text &&
-            <Badge
-                bg="info"
-                style={{ marginLeft: "10px" }}
-                title={values.text}>
-                {values.text.length > 20 ? (values.text.slice(0, 20) + "...") : values.text}
-                {values.textInPlot && "*"}
-            </Badge>}
-        {(values.yearFrom !== 1891 || values.yearTo !== 2016) &&
-            <Badge bg="info" style={{ marginLeft: "10px" }}>{values.yearFrom} - {values.yearTo}</Badge>}
-        {values.imdb > 0 &&
-            <Badge bg="info" style={{ marginLeft: "10px" }}>IMDB: {values.imdb}+</Badge>}
-        {values.withPoster > 0 &&
-            <Badge bg="info" style={{ marginLeft: "10px" }}>With image</Badge>}
-        {values.genres?.length > 0 && generateForArray(values.genres, values.genresLogic)}
-        {values.types?.length > 0 && generateForArray(values.types)}
-        {values.actors?.length > 0 && generateForArray(values.actors, values.actorsLogic)}
-        {values.countries?.length > 0 && generateForArray(values.countries, values.countriesLogic)}
-        {values.languages?.length > 0 && generateForArray(values.languages, values.languagesLogic)}
-        {values.writers?.length > 0 && generateForArray(values.writers, values.writersLogic)}
-        {values.directors?.length > 0 && generateForArray(values.directors, values.directorsLogic)}
-        {values.rates?.length > 0 && generateForArray(values.rates)}
+        {initial.isEq(values)
+            ? "Search params"
+            : <>
+                {values.text &&
+                    <Badge
+                        bg="info"
+                        style={{ marginLeft: "10px" }}
+                        title={values.text}>
+                        {values.text.length > 20 ? (values.text.slice(0, 20) + "...") : values.text}
+                        {values.textInPlot && "*"}
+                    </Badge>}
+                {(values.yearFrom !== 1891 || values.yearTo !== 2016) &&
+                    <Badge bg="info" style={{ marginLeft: "10px" }}>{values.yearFrom} - {values.yearTo}</Badge>}
+                {values.imdb > 0 &&
+                    <Badge bg="info" style={{ marginLeft: "10px" }}>IMDB: {values.imdb}+</Badge>}
+                {values.withPoster > 0 &&
+                    <Badge bg="info" style={{ marginLeft: "10px" }}>With image</Badge>}
+                {values.genres?.length > 0 && generateForArray(values.genres, values.genresLogic)}
+                {values.types?.length > 0 && generateForArray(values.types)}
+                {values.actors?.length > 0 && generateForArray(values.actors, values.actorsLogic)}
+                {values.countries?.length > 0 && generateForArray(values.countries, values.countriesLogic)}
+                {values.languages?.length > 0 && generateForArray(values.languages, values.languagesLogic)}
+                {values.writers?.length > 0 && generateForArray(values.writers, values.writersLogic)}
+                {values.directors?.length > 0 && generateForArray(values.directors, values.directorsLogic)}
+                {values.rates?.length > 0 && generateForArray(values.rates)}
+            </>
+        }
     </>
 }
 
