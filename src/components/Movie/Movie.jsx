@@ -248,30 +248,35 @@ const Movie = (props) => {
                         <Row>
                             <h4>Comments</h4>
                         </Row>
-                        <Row>
-                            <Form onSubmit={formik.handleSubmit} >
+                        {props.profile.user
+                            ? <>
                                 <Row>
-                                    <Col>
-                                        <Form.Group>
-                                            <Form.Control
-                                                type="text"
-                                                name="comment"
-                                                onChange={formik.handleChange}
-                                                value={formik.values.comment}
-                                                disabled={isCommentLoading} />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col>
-                                        <Button variant="success" type="submit" disabled={isCommentLoading}>
-                                            Submit
-                                        </Button>
-                                    </Col>
+                                    <Form onSubmit={formik.handleSubmit} >
+                                        <Row>
+                                            <Col>
+                                                <Form.Group>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="comment"
+                                                        onChange={formik.handleChange}
+                                                        value={formik.values.comment}
+                                                        disabled={isCommentLoading} />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col>
+                                                <Button variant="success" type="submit" disabled={isCommentLoading}>
+                                                    Submit
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Form>
                                 </Row>
-                            </Form>
-                        </Row>
-                        <Row>
-                            <CommentsSection comments={comments} />
-                        </Row>
+                                <Row>
+                                    <CommentsSection comments={comments} />
+                                </Row>
+                            </>
+                            : <EmptyState message={"Login required to see comments."} link={{ href: "/auth", text: "Auth" }} />
+                        }
                     </Col>
                 </Row>
             </Container >
