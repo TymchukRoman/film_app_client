@@ -6,7 +6,7 @@ import { Container, Row, Col, Card, Badge, Form, Button, ListGroup, ListGroupIte
 import { getComments, newComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
 import { setParams } from "../../store/reducers/search.reducer";

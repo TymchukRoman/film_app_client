@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getFavorites } from "../../api/userAPI";
 import { Row, Col, Card } from "react-bootstrap";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import { Link, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import Preloader from "../helpers/Preloader";

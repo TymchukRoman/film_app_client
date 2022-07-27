@@ -1,7 +1,7 @@
 import { client } from "./axiosClient";
 
-export const getMovies = async (page, limit) => {
-    return client.get(`movie/all/${page}/${limit}`);
+export const getMovies = async (page, limit, sort) => {
+    return client.get(`movie/all/${page}/${limit}/${sort}`);
 }
 
 export const getMovie = async (movieId) => {

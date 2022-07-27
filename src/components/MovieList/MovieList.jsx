@@ -5,9 +5,11 @@ import SearchParams from "./SearchParams";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setParams, setPage, setLimit, setSort } from "../../store/reducers/search.reducer";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
+import sortOptions from "./sortingMap.json";
+import Select from "react-select";
 
 const MovieList = (props) => {
 
@@ -27,17 +29,27 @@ const MovieList = (props) => {
         //eslint-disable-next-line 
     }, []);
 
+    useEffect(() => {
+        loadMovies();
+        //eslint-disable-next-line 
+    }, [props.search.sort])
+
     const loadMovies = (newPage = props.search?.page || 1, newLimit = props.search?.limit || 10) => {
         props.setPage(newPage);
         props.setLimit(newLimit);
         if (!props.search?.params) {
-            getMovies(newPage, newLimit).then((response) => {
+            getMovies(newPage, newLimit, props.search?.sort).then((response) => {
                 setMovies(response.data.movies);
                 setTotal(response.data.totalPages);
                 setMoviesNumber(response.data.total);
             });
         } else {
-            searchMovies({ params: props.search?.params || {}, page: newPage, limit: newLimit }).then((response) => {
+            searchMovies({
+                params: props.search?.params || {},
+                page: newPage,
+                limit: newLimit,
+                sort: props.search?.sort || "-year"
+            }).then((response) => {
                 setMovies(response.data.movies);
                 setTotal(response.data.totalPages);
                 setMoviesNumber(response.data.total);
@@ -51,10 +63,21 @@ const MovieList = (props) => {
             isUsed={props.search?.isUsed}
             setParams={props.setParams} />
         <Container>
-            {movies && movies.length ?
-                <h4>Found {moviesNumber} movies</h4>
-                : <></>
-            }
+            <Row>
+                <Col>
+                    {movies && movies.length ?
+                        <h4>Found {moviesNumber} movies</h4>
+                        : <></>
+                    }
+                </Col>
+                <Col>
+                    <Select
+                        options={sortOptions}
+                        onChange={(item) => props.setSort(item.value)}
+                        value={sortOptions.find(item => item.value === props.search.sort)}
+                    />
+                </Col>
+            </Row>
             {movies
                 ? <>
                     {movies.length ? <>

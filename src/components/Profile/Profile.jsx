@@ -3,7 +3,7 @@ import { Button, Row, Col, Card, ButtonGroup, ButtonToolbar, InputGroup, Contain
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { logoutUser } from "../../store/reducers/user.reducer";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import { Link } from "react-router-dom";
 import { getManyMovies } from "../../api/movieAPI";
 import { getFavorites } from "../../api/userAPI";
