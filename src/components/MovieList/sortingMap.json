@@ -1,11 +1,11 @@
 [
     {
         "label": "Newest",
-        "value": "-year"
+        "value": "-released"
     },
     {
         "label": "Oldest",
-        "value": "year"
+        "value": "released"
     },
     {
         "label": "Top rated",
