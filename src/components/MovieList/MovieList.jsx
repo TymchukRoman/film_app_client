@@ -10,6 +10,7 @@ import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
 import sortOptions from "./sortingMap.json";
 import Select from "react-select";
+import { limits } from "./initialValues";
 
 const MovieList = (props) => {
 
@@ -30,9 +31,9 @@ const MovieList = (props) => {
     }, []);
 
     useEffect(() => {
-        loadMovies();
+        loadMovies(undefined, props.search?.limit);
         //eslint-disable-next-line 
-    }, [props.search.sort])
+    }, [props.search?.sort, props.search?.limit])
 
     const loadMovies = (newPage = props.search?.page || 1, newLimit = props.search?.limit || 10) => {
         props.setPage(newPage);
@@ -103,11 +104,27 @@ const MovieList = (props) => {
             }
         </Container>
 
-        {total && <PaginationComponent
-            pagesCount={total}
-            currentPage={props.search?.page ? props.search.page : 1}
-            setCurrentPage={props.setPage}
-            loadMovies={loadMovies} />}
+        <Container>
+            <Row >
+                <Col>
+                    {total && <PaginationComponent
+                        pagesCount={total}
+                        currentPage={props.search?.page ? props.search.page : 1}
+                        setCurrentPage={props.setPage}
+                        loadMovies={loadMovies} />}
+
+                </Col>
+                <Col >
+                    <div style={{ padding: "20px" }}>
+                        <Select
+                            defaultValue={limits.find(limit => limit.value === props.search?.limit) || limits[0]}
+                            options={limits}
+                            onChange={(item) => props.setLimit(item.value)}
+                        />
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     </>
 }
 

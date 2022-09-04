@@ -3,11 +3,10 @@ const initialState = {
     params: null,
     page: 1,
     limit: 10,
-    sort: '-year'
+    sort: '-released'
 }
 
 const searchReducer = (state = initialState, action) => {
-    // The reducer normally looks at the action type field to decide what happens
     switch (action.type) {
         case 'SET_PARAMS': {
             let isUsed = false;
@@ -15,9 +14,7 @@ const searchReducer = (state = initialState, action) => {
                 isUsed = true;
             }
             return {
-                page: 1,
-                limit: 10,
-                sort: '-year',
+                ...state,
                 isUsed,
                 params: action.params
             }
