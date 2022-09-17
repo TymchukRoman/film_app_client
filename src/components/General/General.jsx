@@ -4,7 +4,7 @@ import 'react-multi-carousel/lib/styles.css';
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { Link, Navigate } from "react-router-dom";
 import { getCategorieMovies, getLatestMovies, getTopMovies } from "../../api/movieAPI";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import { movieGenres } from "../../constants/categories";
 import Preloader from "../helpers/Preloader";
 import { connect } from "react-redux";

@@ -1,0 +1,30 @@
+[
+    {
+        "label": "Newest",
+        "value": "-released"
+    },
+    {
+        "label": "Oldest",
+        "value": "released"
+    },
+    {
+        "label": "Top rated",
+        "value": "-imdb.rating"
+    },
+    {
+        "label": "Hotest",
+        "value": "-num_mflix_comments"
+    },
+    {
+        "label": "Lowest rated",
+        "value": "imdb.rating"
+    },
+    {
+        "label": "Longest",
+        "value": "-runtime"
+    },
+    {
+        "label": "Shortest",
+        "value": "runtime"
+    }
+]

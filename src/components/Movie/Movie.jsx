@@ -3,10 +3,10 @@ import { connect } from "react-redux";
 import { useParams, Navigate } from "react-router-dom";
 import { getMovie } from "../../api/movieAPI";
 import { Container, Row, Col, Card, Badge, Form, Button, ListGroup, ListGroupItem } from "react-bootstrap";
-import { getComments, newComment } from "../../api/commentsAPI";
+import { getComments, newComment, replyComment } from "../../api/commentsAPI";
 import { useFormik } from "formik";
 import { editFavorite } from "../../api/userAPI";
-import ImageComponent from "../helpers/imageComponent";
+import ImageComponent from "../helpers/ImageComponent";
 import Preloader from "../helpers/Preloader";
 import EmptyState from "../helpers/EmptyState";
 import { setParams } from "../../store/reducers/search.reducer";
@@ -73,17 +73,20 @@ const Movie = (props) => {
         return `${hours ? `${hours}h ` : ''}${minutes}m`
     }
 
+    const loadComments = () => {
+        getComments(movieId).then(response => {
+            setComments(response.data.comments.sort((a, b) => new Date(b.date) - new Date(a.date)));
+        })
+    }
+
     useEffect(() => {
         if (movieId) {
             getMovie(movieId).then(response => {
                 setMovie(response.data.movie);
             });
-            getComments(movieId).then(response => {
-                setComments(response.data.comments.sort((a, b) => new Date(b.date) - new Date(a.date)));
-            })
-        } else {
-
+            loadComments();
         }
+        //eslint-disable-next-line
     }, [movieId])
 
     const formik = useFormik({
@@ -248,30 +251,35 @@ const Movie = (props) => {
                         <Row>
                             <h4>Comments</h4>
                         </Row>
-                        <Row>
-                            <Form onSubmit={formik.handleSubmit} >
+                        {props.profile.user
+                            ? <>
                                 <Row>
-                                    <Col>
-                                        <Form.Group>
-                                            <Form.Control
-                                                type="text"
-                                                name="comment"
-                                                onChange={formik.handleChange}
-                                                value={formik.values.comment}
-                                                disabled={isCommentLoading} />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col>
-                                        <Button variant="success" type="submit" disabled={isCommentLoading}>
-                                            Submit
-                                        </Button>
-                                    </Col>
+                                    <Form onSubmit={formik.handleSubmit} >
+                                        <Row>
+                                            <Col>
+                                                <Form.Group>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="comment"
+                                                        onChange={formik.handleChange}
+                                                        value={formik.values.comment}
+                                                        disabled={isCommentLoading} />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col>
+                                                <Button variant="success" type="submit" disabled={isCommentLoading}>
+                                                    Submit
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Form>
                                 </Row>
-                            </Form>
-                        </Row>
-                        <Row>
-                            <CommentsSection comments={comments} />
-                        </Row>
+                                <Row>
+                                    <CommentsSection comments={comments} loadComments={loadComments} />
+                                </Row>
+                            </>
+                            : <EmptyState message={"Login required to see comments."} link={{ href: "/auth", text: "Auth" }} />
+                        }
                     </Col>
                 </Row>
             </Container >
@@ -280,67 +288,114 @@ const Movie = (props) => {
     </div >
 }
 
-const CommentsSection = ({ comments }) => {
+const CommentsSection = ({ comments, loadComments }) => {
+
+    const [commentReplying, setCommentReplying] = useState("");
 
     return <>
         {comments.length
             ? <div>
                 {comments.map((comment) => {
-                    return <Card key={comment._id} style={{ marginTop: '10px' }} className={`mb-2`} >
-                        <Card.Header>
-                            <Row>
-                                <Col>
-                                    {comment.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{comment.date}</span>
-                                </Col>
-                            </Row>
-                        </Card.Header>
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    {comment.text}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    Reply...
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                        {comment.replies?.length > 0
-                            ? <>
-                                {comment.replies.map(reply => {
-                                    return <ListGroup className="list-group-flush">
-                                        <ListGroupItem>
-                                            <Row>
-                                                <Col xs={1}>
-                                                    <img src={repliedIcon} alt="Replied icon" style={{ width: "30%" }} />
-                                                </Col>
-                                                <Col>
-                                                    <Row>
-                                                        <Col>
-                                                            {reply.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{reply.date}</span>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col>
-                                                            {reply.text}
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                            </Row>
-                                        </ListGroupItem>
-                                    </ListGroup>
-                                })}
-
-                            </>
-                            : <></>}
-                    </Card>
+                    return <Comment comment={comment} commentReplying={commentReplying} setCommentReplying={setCommentReplying} loadComments={loadComments} />
 
                 })}
             </div>
             : <EmptyState message={"No comments on this movie yet"} />
         }
     </>
+}
+
+const Comment = ({ comment, commentReplying, setCommentReplying, loadComments }) => {
+
+    const [replyText, setReplyText] = useState("");
+    const [isReplying, setIsReplying] = useState(false);
+
+    const relpyToComment = () => {
+        replyComment(comment._id, replyText).then(() => {
+            setIsReplying(false);
+            setCommentReplying("");
+            loadComments();
+        });
+    }
+
+    useEffect(() => {
+        if (isReplying && commentReplying !== comment._id) {
+            setIsReplying(false);
+        }
+        //eslint-disable-next-line
+    }, [commentReplying])
+
+    const setReplyMode = () => {
+        setIsReplying(true);
+        setCommentReplying(comment._id);
+    }
+
+    return <Card key={comment._id} style={{ marginTop: '10px' }} className={`mb-2`} >
+        <Card.Header>
+            <Row>
+                <Col>
+                    {comment.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{comment.date}</span>
+                </Col>
+            </Row>
+        </Card.Header>
+        <Card.Body>
+            <Row>
+                <Col>
+                    {comment.text}
+                </Col>
+            </Row>
+            {isReplying
+                ? <Row>
+                    <Col>
+                        <Form.Control
+                            type="text"
+                            name="comment"
+                            onChange={(e) => setReplyText(e.target.value)}
+                            value={replyText} />
+                    </Col>
+                    <Col>
+                        <Button onClick={relpyToComment}> Reply </Button>
+                    </Col>
+                </Row>
+                : <Row>
+                    <Col>
+                        <a onClick={setReplyMode}> Reply... </a>
+                    </Col>
+                </Row>
+            }
+        </Card.Body>
+        {
+            comment.replies?.length > 0
+                ? <>
+                    {comment.replies.map(reply => {
+                        return <ListGroup className="list-group-flush">
+                            <ListGroupItem>
+                                <Row>
+                                    <Col xs={1}>
+                                        <img src={repliedIcon} alt="Replied icon" style={{ width: "30%" }} />
+                                    </Col>
+                                    <Col>
+                                        <Row>
+                                            <Col>
+                                                {reply.name} <span style={{ marginLeft: '3%' }} className={'text-muted'}>{reply.date}</span>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                {reply.text}
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            </ListGroupItem>
+                        </ListGroup>
+                    })}
+
+                </>
+                : <></>
+        }
+    </Card >
+
 }
 
 const mapStateToProps = (state, ownProps) => ({

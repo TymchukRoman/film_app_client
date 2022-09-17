@@ -1,9 +1,13 @@
 import { useFormik } from "formik";
 import React from "react";
+import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { registerUser } from "../../api/userAPI";
+import { registerValidation } from "./validation/signup";
 
 const Singup = ({ switchMode, setLoginedUser }) => {
+
+    const [errors, setErrors] = useState([]);
 
     const formik = useFormik({
         initialValues: {
@@ -13,12 +17,19 @@ const Singup = ({ switchMode, setLoginedUser }) => {
             username: ''
         },
         onSubmit: (values) => {
-            registerUser({ email: values.email, password: values.password, name: values.username }).then((response) => {
-                if (response.data?.token && response.data?.user) {
-                    localStorage.setItem('auth_token', response.data.token)
-                    setLoginedUser(response.data.user);
-                }
-            });
+            const { error } = registerValidation(values)
+            if (error) {
+                setErrors(error.message)
+            } else {
+                registerUser({ email: values.email, password: values.password, name: values.username }).then((response) => {
+                    if (response.data.error) {
+                        setErrors(response.data.error)
+                    } else if (response.data?.token && response.data?.user) {
+                        localStorage.setItem('auth_token', response.data.token)
+                        setLoginedUser(response.data.user);
+                    }
+                });
+            }
         },
     });
 
@@ -32,9 +43,6 @@ const Singup = ({ switchMode, setLoginedUser }) => {
                     name="email"
                     onChange={formik.handleChange}
                     value={formik.values.email} />
-                <Form.Text className="text-muted">
-                    Email errors
-                </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -44,9 +52,6 @@ const Singup = ({ switchMode, setLoginedUser }) => {
                     name="username"
                     onChange={formik.handleChange}
                     value={formik.values.username} />
-                <Form.Text className="text-muted">
-                    Username errors
-                </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -57,21 +62,22 @@ const Singup = ({ switchMode, setLoginedUser }) => {
                     onChange={formik.handleChange}
                     value={formik.values.password} />
 
-                <Form.Text>
+                <Form.Label>
                     Repeat password
-                </Form.Text>
+                </Form.Label>
 
                 <Form.Control
                     type="password"
                     name="repeatPassword"
                     onChange={formik.handleChange}
                     value={formik.values.repeatPassword} />
-
-                <Form.Text className="text-muted">
-                    Password errors
-                </Form.Text>
+                {errors
+                    ? <Form.Text className="text-muted">
+                        {errors}
+                    </Form.Text>
+                    : <></>
+                }
             </Form.Group>
-
             <Button variant="success" type="submit">
                 Submit
             </Button>
